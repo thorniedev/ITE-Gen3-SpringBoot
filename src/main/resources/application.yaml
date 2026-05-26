@@ -1,0 +1,25 @@
+
+app:
+  version: 1
+  info: "Testing app"
+  message: "Hello from the YAML configuration!"
+  port: "${server.port:8070}"
+
+server:
+  port: 8070
+
+spring:
+  application:
+    name: ite-spring-boot
+  threads:
+    virtual:
+      enabled: true
+
+  main:
+    banner-mode: console
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,loggers"
