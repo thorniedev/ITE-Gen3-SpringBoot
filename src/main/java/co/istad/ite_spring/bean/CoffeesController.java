@@ -8,18 +8,17 @@ import java.util.ArrayList;
 
 
 @RestController
-@RequestMapping("/config")
-public class CoffeeController
+@RequestMapping("/api/v2/coffees")
+public class CoffeesController
 {
-
-    // Inject
     private final ArrayList<Coffee> coffeeList;
-    public CoffeeController(ArrayList<Coffee> coffeeList) {
+    public CoffeesController(ArrayList<Coffee> coffeeList) {
         this.coffeeList = coffeeList;
     }
 
-    @GetMapping("/coffees")
+    @GetMapping("/coffee")
     public ArrayList<Coffee> getCoffees() {
         return coffeeList;
     }
+
 }
