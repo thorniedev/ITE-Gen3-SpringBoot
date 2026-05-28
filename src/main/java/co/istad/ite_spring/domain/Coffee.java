@@ -13,5 +13,6 @@ public class Coffee {
     private String name;
     private Integer id;
     private Integer sugar;
+    private Double price;
     private String description;
 }

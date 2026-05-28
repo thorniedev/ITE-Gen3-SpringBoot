@@ -5,12 +5,12 @@ import co.istad.ite_spring.domain.Coffee;
 import co.istad.ite_spring.dto.CoffeeResponse;
 import co.istad.ite_spring.repositoty.CoffeeRepository;
 import co.istad.ite_spring.service.CoffeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/coffees")
 public class CoffeeController {
@@ -24,4 +24,31 @@ public class CoffeeController {
     public List<Coffee> getCoffees() {
         return coffeeService.getAllCoffees();
     }
+
+    @GetMapping("/{id}")
+    public Coffee getCoffee(
+            @PathVariable Integer id
+    ) {
+        log.info("Get coffee by id {}", id);
+
+        List<Coffee> coffees = coffeeService.getAllCoffees();
+        return coffees.stream()
+                .filter(c -> c.getId()==id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @GetMapping("/search")
+    public List<Coffee> seachCoffee(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "0") Double price,
+            @RequestParam(required = false, defaultValue = "0")  Integer sugar
+    ) {
+        log.info("Get coffee by name {}", name);
+        log.info("Get coffee by price {}", price);
+        log.info("Get coffee by sugar {}", sugar);
+
+        return coffeeService.searchCoffee(name, price, sugar);
+    }
+
 }

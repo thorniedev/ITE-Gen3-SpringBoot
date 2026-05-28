@@ -6,5 +6,10 @@ import co.istad.ite_spring.dto.CoffeeResponse;
 import java.util.List;
 
 public interface CoffeeService {
+
     List<Coffee> getAllCoffees();
+
+    Coffee getCoffeeById(Integer id);
+
+    List<Coffee> searchCoffee(String name, Double price, Integer sugar);
 }

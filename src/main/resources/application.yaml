@@ -3,10 +3,10 @@ app:
   version: 1
   info: "Testing app"
   message: "Hello from the YAML configuration!"
-  port: "${server.port:8070}"
+  port: "${server.port:7070}"
 
 server:
-  port: 8070
+  port: 7070
 
 spring:
   application:
