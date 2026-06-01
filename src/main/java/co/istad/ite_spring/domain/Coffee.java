@@ -1,5 +1,6 @@
 package co.istad.ite_spring.domain;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Coffee {
-    private String name;
+
+    @NotNull private String name;
     private Integer id;
-    private Integer sugar;
-    private Double price;
-    private String description;
+    @NotNull private Integer sugar;
+    @NotNull private Double price;
+    @NotNull private String description;
 }

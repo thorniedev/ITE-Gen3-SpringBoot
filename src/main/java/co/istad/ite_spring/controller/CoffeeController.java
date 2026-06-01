@@ -1,10 +1,10 @@
 package co.istad.ite_spring.controller;
 
-import co.istad.ite_spring.bean.CoffeesController;
 import co.istad.ite_spring.domain.Coffee;
 import co.istad.ite_spring.dto.CoffeeResponse;
-import co.istad.ite_spring.repositoty.CoffeeRepository;
+import co.istad.ite_spring.dto.CreateCoffeeRequest;
 import co.istad.ite_spring.service.CoffeeService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +13,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/coffees")
+@RestControllerAdvice
 public class CoffeeController {
 
     private final CoffeeService coffeeService;
@@ -49,6 +50,12 @@ public class CoffeeController {
         log.info("Get coffee by sugar {}", sugar);
 
         return coffeeService.searchCoffee(name, price, sugar);
+    }
+
+    @PostMapping
+    public CoffeeResponse addCoffee(
+            @Valid @RequestBody CreateCoffeeRequest createCoffeeRequest) {
+        return coffeeService.addCoffee(createCoffeeRequest);
     }
 
 }

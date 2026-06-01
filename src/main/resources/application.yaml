@@ -18,6 +18,11 @@ spring:
   main:
     banner-mode: console
 
+  springdoc:
+    scalar:
+      enabled: true
+      url: https://example.com/openapi.json
+
 management:
   endpoints:
     web:

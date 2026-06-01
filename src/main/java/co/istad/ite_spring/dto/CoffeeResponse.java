@@ -1,6 +1,10 @@
 package co.istad.ite_spring.dto;
 
 public record CoffeeResponse(
-        String name
+        Integer id,
+        String name,
+        Integer sugar,
+        Double price,
+        String description
 ) {
 }
