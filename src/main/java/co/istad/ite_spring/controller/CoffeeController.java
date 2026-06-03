@@ -3,9 +3,11 @@ package co.istad.ite_spring.controller;
 import co.istad.ite_spring.domain.Coffee;
 import co.istad.ite_spring.dto.CoffeeResponse;
 import co.istad.ite_spring.dto.CreateCoffeeRequest;
+import co.istad.ite_spring.dto.UpdateCoffeeRequest;
 import co.istad.ite_spring.service.CoffeeService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,21 +24,18 @@ public class CoffeeController {
     }
 
     @GetMapping
-    public List<Coffee> getCoffees() {
+    public List<CoffeeResponse> getCoffees() {
         return coffeeService.getAllCoffees();
     }
 
     @GetMapping("/{id}")
-    public Coffee getCoffee(
+    public CoffeeResponse getCoffee(
             @PathVariable Integer id
     ) {
         log.info("Get coffee by id {}", id);
 
-        List<Coffee> coffees = coffeeService.getAllCoffees();
-        return coffees.stream()
-                .filter(c -> c.getId()==id)
-                .findFirst()
-                .orElse(null);
+        return coffeeService.getCoffeeById(id);
+
     }
 
     @GetMapping("/search")
@@ -52,10 +51,27 @@ public class CoffeeController {
         return coffeeService.searchCoffee(name, price, sugar);
     }
 
+    @PutMapping("/{id}")
+    public CoffeeResponse updateCoffeeById(
+            @PathVariable Integer id,
+            @Valid @RequestBody UpdateCoffeeRequest updateCoffeeRequest) {
+        return coffeeService.updateCoffeeById(id, updateCoffeeRequest);
+    }
+
     @PostMapping
     public CoffeeResponse addCoffee(
-            @Valid @RequestBody CreateCoffeeRequest createCoffeeRequest) {
+            @Valid @RequestBody CreateCoffeeRequest createCoffeeRequest
+    ) {
         return coffeeService.addCoffee(createCoffeeRequest);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void deleteCoffeeById(
+            @PathVariable Integer id
+    ) {
+       coffeeService.deleteCoffeeById(id);
+    }
+
 
 }

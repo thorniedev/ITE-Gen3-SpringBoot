@@ -8,9 +8,6 @@ public record CreateCoffeeRequest(
     @Size(min=3, max = 255)
     String name,
 
-    @NotNull(message = "Sugar is required")
-    Integer sugar,
-
     @NotNull(message = "Price is required")
     @Positive
     Double price,
