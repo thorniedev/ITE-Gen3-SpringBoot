@@ -1,0 +1,16 @@
+
+server:
+  port: 8090
+
+spring:
+  application:
+    name: user
+
+  datasource:
+    url: jdbc:postgresql://95.111.245.161:5850/springboot_ite
+    username: admin
+    password: admin@123
+
+  threads:
+    virtual:
+      enabled: true

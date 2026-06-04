@@ -1,72 +1,30 @@
-
+// root gradle build
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.6'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '4.0.6' apply false
+	id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'co.istad'
+group = 'com.kh.istad.fswd.attendance'
 version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+allprojects {
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
 
-	//dependencies {
-//
-//	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//
-//	// Lombok
-//	compileOnly 'org.projectlombok:lombok'
-//	annotationProcessor 'org.projectlombok:lombok'
-//	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-//	testCompileOnly 'org.projectlombok:lombok'
-//	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-//	testAnnotationProcessor 'org.projectlombok:lombok'
-//
-//	// actuator
-//	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-//	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
-//
-//	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-//
-//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
-//	implementation 'com.scalar:scalar-spring-boot-starter:0.8.0'
-//}
+	apply plugin: 'java'
 
-dependencies {
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(25)
+		}
+	}
 
-	// Spring Web
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	// OpenAPI + Swagger UI
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
-
-	// Actuator
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-	// Lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	// Configuration Processor
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-	// Testing
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// Validation
-	implementation 'javax.validation:validation-api:2.0.1.Final'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+	tasks.withType(Test).configureEach {
+		useJUnitPlatform()
+	}
 }

@@ -1,0 +1,26 @@
+
+app:
+  version: 1
+  info: "Testing app"
+  message: "Hello from the YAML configuration!"
+  port: "${server.port:7070}"
+
+server:
+  port: 7070
+
+spring:
+  application:
+    name: ecommerce
+
+  datasource:
+    url: jdbc:postgresql://95.111.245.161:5850/springboot_ite
+    username: admin
+    password: admin@123
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: create-drop
+
+  threads:
+    virtual:
+      enabled: true
