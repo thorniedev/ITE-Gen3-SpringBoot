@@ -23,6 +23,8 @@ public class Category
     private String code;
     private String name;
     private String description;
+    private String icon;
+    private Boolean isDeleted;
 
     @ManyToOne
     private Category parentCategory;

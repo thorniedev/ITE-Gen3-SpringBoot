@@ -3,7 +3,7 @@ app:
   version: 1
   info: "Testing app"
   message: "Hello from the YAML configuration!"
-  port: "${server.port:7070}"
+  # port: "${server.port:7070}"
 
 server:
   port: 7070
@@ -13,13 +13,17 @@ spring:
     name: ecommerce
 
   datasource:
-    url: jdbc:postgresql://95.111.245.161:5850/springboot_ite
+    #url: jdbc:postgresql://95.111.245.161:5850/ecommerce
+    url: jdbc:postgresql://localhost:5850/ite
     username: admin
     password: admin@123
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     database: POSTGRESQL
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+    show-sql: true
 
   threads:
     virtual:
