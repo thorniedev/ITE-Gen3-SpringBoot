@@ -1,5 +1,6 @@
 package com.kh.istad.fswd.attendance.ecommerce.controller;
 
+import com.kh.istad.fswd.attendance.common.dto.PageResponse;
 import com.kh.istad.fswd.attendance.ecommerce.domain.Category;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+
+import static com.kh.istad.fswd.attendance.common.constant.AppConstant.DEFAULT_PAGE_NUMBER;
+import static com.kh.istad.fswd.attendance.common.constant.AppConstant.DEFAULT_PAGE_SIZE;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -30,9 +34,11 @@ public class CategoryController
 
     // GET All categories(pagination)
     @GetMapping()
-    public Page<CreateCategoryResponse> getCategory(
-          @RequestParam(defaultValue = "0") Integer pageNumber,
-          @RequestParam(defaultValue = "25") Integer pageSize
+    public PageResponse<CreateCategoryResponse> getAllCategories(
+          @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER)
+          Integer pageNumber,
+          @RequestParam(defaultValue = DEFAULT_PAGE_SIZE)
+          Integer pageSize
     ){
         return categoryService.getAllCategories(
                 pageNumber, pageSize

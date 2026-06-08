@@ -1,5 +1,6 @@
 package com.kh.istad.fswd.attendance.ecommerce.service;
 
+import com.kh.istad.fswd.attendance.common.dto.PageResponse;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ public interface CategoryService {
     CreateCategoryResponse createNewCategory(CreateCategoryRequest createCategoryRequest);
 
     // Get All product by pagination:
-    Page<CreateCategoryResponse> getAllCategories(
+    PageResponse<CreateCategoryResponse> getAllCategories(
             Integer pageNumber,
             Integer pageSize
     );

@@ -1,6 +1,9 @@
 package com.kh.istad.fswd.attendance.ecommerce.service.impl
 ;
 
+import com.kh.istad.fswd.attendance.common.dto.PageResponse;
+import com.kh.istad.fswd.attendance.common.exception.ConflictException;
+import com.kh.istad.fswd.attendance.common.exception.ResourceNotFoundException;
 import com.kh.istad.fswd.attendance.ecommerce.domain.Category;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
 import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
@@ -94,8 +97,8 @@ public class CategoryServiceImpl implements CategoryService
     //                .build();
 
         if (categoryRepository.existsByName(createCategoryRequest.name())) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ConflictException(
+                   // HttpStatus.CONFLICT,
                     "Category already exists"
             );
         }
@@ -105,8 +108,8 @@ public class CategoryServiceImpl implements CategoryService
         if (createCategoryRequest.parentCategoryId() != null) {
             parentCategory = categoryRepository
                     .findById(createCategoryRequest.parentCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            //HttpStatus.NOT_FOUND,
                             "Parent Category Not Found"
                     ));
         }
@@ -126,13 +129,29 @@ public class CategoryServiceImpl implements CategoryService
     }
 
     @Override
-    public Page<CreateCategoryResponse> getAllCategories(Integer pageNumber, Integer pageSize) {
+    public PageResponse<CreateCategoryResponse> getAllCategories(Integer pageNumber, Integer pageSize) {
 
         //
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
+        /*
         return categoryRepository.findAll(pageable)
-                .map(categoryMapper::mapCategoryToCreateCategoryResponse);
+                .map(categoryMapper::mapCategoryToCreateCategoryResponse); */
+
+        // with PageResponse for common module
+
+        Page<CreateCategoryResponse> page =
+                categoryRepository.findAll(pageable)
+                        .map(categoryMapper::mapCategoryToCreateCategoryResponse);
+        return PageResponse.<CreateCategoryResponse>builder()
+                .contents(page.getContent())
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .first(page.isFirst())
+                .last(page.isLast())
+                .build();
     }
 
     // Find By ID
@@ -141,8 +160,8 @@ public class CategoryServiceImpl implements CategoryService
 
         Category category = categoryRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        // HttpStatus.NOT_FOUND,
                         "Category Not Found"
                 ));
 
@@ -156,15 +175,15 @@ public class CategoryServiceImpl implements CategoryService
         // This prevents when Get Blank category (if get null = Not Found)
         Category category = categoryRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        // HttpStatus.NOT_FOUND,
                         "Category Not Found"
                 ));
 
         // if Exist but not parent_category
         if (category.getParentCategory() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+            throw new ResourceNotFoundException(
+                    // HttpStatus.NOT_FOUND,
                     "This Category Not Parent Category!!!"
             );
         }
@@ -179,16 +198,17 @@ public class CategoryServiceImpl implements CategoryService
     // can not delete parent have sub-categories
     @Override
     public void deleteCategoryById(Integer parentCategoryId) {
+
         Category category = categoryRepository
                 .findById(parentCategoryId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        // HttpStatus.NOT_FOUND,
                         "Category Not Found"
                 ));
         boolean hasChildren = categoryRepository.existsByParentCategoryId(parentCategoryId);
         if (hasChildren) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
+            throw new ConflictException(
+                    // HttpStatus.CONFLICT,
                     "Category has children"
             );
         }
@@ -199,15 +219,15 @@ public class CategoryServiceImpl implements CategoryService
     public CreateCategoryResponse updateCategoryByID(Integer id, CreateCategoryRequest createCategoryRequest) {
        Category category = categoryRepository
                .findById(id)
-               .orElseThrow(() -> new ResponseStatusException(
-                       HttpStatus.NOT_FOUND,
+               .orElseThrow(() -> new ResourceNotFoundException(
+                       // HttpStatus.NOT_FOUND,
                        "Category Not Found"
                ));
        // prevent self-parent
         if (createCategoryRequest.parentCategoryId() != null
                 && createCategoryRequest.parentCategoryId().equals(id)) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
+                throw new ConflictException(
+                        // HttpStatus.CONFLICT,
                         "Parent Category Id is already in use"
                 );
         }
@@ -216,8 +236,8 @@ public class CategoryServiceImpl implements CategoryService
         if  (createCategoryRequest.parentCategoryId() != null) {
             parentCategory = categoryRepository
                     .findById(createCategoryRequest.parentCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            // HttpStatus.NOT_FOUND,
                             "Parent Category Not Found"
                     ));
         }
@@ -235,8 +255,8 @@ public class CategoryServiceImpl implements CategoryService
     public CreateCategoryResponse patchCategory(Integer id, CreateCategoryRequest request) {
         Category category = categoryRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        // HttpStatus.NOT_FOUND,
                         "Category Not Found"
                 ));
         if (request.name() != null ) {
@@ -252,8 +272,8 @@ public class CategoryServiceImpl implements CategoryService
         if (request.parentCategoryId() != null) {
             Category parentCategory = categoryRepository
                     .findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            // HttpStatus.NOT_FOUND,
                             "Parent Category Not Found"
                     ));
             category.setParentCategory(parentCategory);
