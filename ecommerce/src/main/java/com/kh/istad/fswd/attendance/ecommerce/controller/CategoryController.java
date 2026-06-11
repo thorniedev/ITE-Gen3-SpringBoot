@@ -32,6 +32,15 @@ public class CategoryController
         return categoryService.createNewCategory(request);
     }
 
+    //
+    @PostMapping("/bulk")
+    public List<CreateCategoryResponse> createCategories(
+            @Valid @RequestBody
+            List<CreateCategoryRequest> requests
+    ) {
+        return categoryService.createCategories(requests);
+    }
+
     // GET All categories(pagination)
     @GetMapping()
     public PageResponse<CreateCategoryResponse> getAllCategories(

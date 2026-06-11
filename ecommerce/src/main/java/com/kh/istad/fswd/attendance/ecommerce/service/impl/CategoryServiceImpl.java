@@ -129,6 +129,24 @@ public class CategoryServiceImpl implements CategoryService
     }
 
     @Override
+    public List<CreateCategoryResponse> createCategories(
+            List<CreateCategoryRequest> requests
+    ) {
+
+        List<Category> categories = requests.stream()
+                .map(categoryMapper::mapCreateCategoryRequestToCategory)
+                .peek(category -> category.setIsDeleted(false))
+                .toList();
+
+        List<Category> savedCategories =
+                categoryRepository.saveAll(categories);
+
+        return savedCategories.stream()
+                .map(categoryMapper::mapCategoryToCreateCategoryResponse)
+                .toList();
+    }
+
+    @Override
     public PageResponse<CreateCategoryResponse> getAllCategories(Integer pageNumber, Integer pageSize) {
 
         //
@@ -268,16 +286,29 @@ public class CategoryServiceImpl implements CategoryService
         if (request.icon() != null) {
             category.setIcon(request.icon());
         }
-
         if (request.parentCategoryId() != null) {
+            if (request.parentCategoryId().equals(id)) {
+                throw new ConflictException("Category cannot be parent of itself");
+            }
+
             Category parentCategory = categoryRepository
-                    .findById(id)
+                    .findById(request.parentCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            // HttpStatus.NOT_FOUND,
                             "Parent Category Not Found"
                     ));
+
             category.setParentCategory(parentCategory);
         }
+
+        //        if (request.parentCategoryId() != null) {
+        //            Category parentCategory = categoryRepository
+        //                    .findById(id)
+        //                    .orElseThrow(() -> new ResourceNotFoundException(
+        //                            // HttpStatus.NOT_FOUND,
+        //                            "Parent Category Not Found"
+        //                    ));
+        //            category.setParentCategory(parentCategory);
+        //        }
 
         category = categoryRepository.save(category);
 

@@ -14,22 +14,4 @@ public interface CategoryMapper {
 
     CreateCategoryResponse mapCategoryToCreateCategoryResponse(Category category);
 
-
-    // Map to Category return type target want map and parameter is a source
-    // Return Type = Target
-    // Parameters = Source
-    //    public Category mapCreateCategoryRequestToCategory(
-    //            CreateCategoryRequest request
-    //    ) {
-
-
-    //        Category category = new Category();
-    //
-    //        category.setName(request.name());
-    //        category.setDescription(request.description());
-    //        category.setIcon(request.icon());
-    //
-    //        return category;
-    // }
-
 }

@@ -3,7 +3,7 @@ app:
   version: 1
   info: "Testing app"
   message: "Hello from the YAML configuration!"
-  # port: "${server.port:7070}"
+  port: "${server.port:7070}"
 
 server:
   port: 7070

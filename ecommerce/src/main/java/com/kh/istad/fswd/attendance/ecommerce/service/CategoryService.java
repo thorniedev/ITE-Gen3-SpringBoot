@@ -12,6 +12,11 @@ public interface CategoryService {
 
     CreateCategoryResponse createNewCategory(CreateCategoryRequest createCategoryRequest);
 
+    //
+    List<CreateCategoryResponse> createCategories(
+            List<CreateCategoryRequest> requests
+    );
+
     // Get All product by pagination:
     PageResponse<CreateCategoryResponse> getAllCategories(
             Integer pageNumber,
