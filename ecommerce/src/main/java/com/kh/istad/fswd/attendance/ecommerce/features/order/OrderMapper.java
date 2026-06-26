@@ -1,6 +1,6 @@
 package com.kh.istad.fswd.attendance.ecommerce.features.order;
 
-import com.kh.istad.fswd.attendance.ecommerce.features.order.dto.OrderRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.order.dto.CreateOrderRequest;
 import com.kh.istad.fswd.attendance.ecommerce.features.order.dto.OrderResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,7 +21,7 @@ public interface OrderMapper
     @Mapping(target = "paymentQr", ignore = true)
     @Mapping(target = "paymentMd5", ignore = true)
     @Mapping(target = "paymentStatus", ignore = true)
-    Order mapOrderRequestToOrder(OrderRequest orderRequest);
+    Order mapOrderRequestToOrder(CreateOrderRequest createOrderRequest);
 
 
     // OrderLineResponse mapOrderToOrderLineResponse(Order order);
