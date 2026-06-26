@@ -1,14 +1,15 @@
-package com.kh.istad.fswd.attendance.ecommerce.controller;
+package com.kh.istad.fswd.attendance.ecommerce.features.product;
 
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.CreateProductRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductFilterRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductResponse;
-import com.kh.istad.fswd.attendance.ecommerce.dto.seach.ProductSearchRequest;
-import com.kh.istad.fswd.attendance.ecommerce.service.ProductService;
+import com.kh.istad.fswd.attendance.common.dto.PageResponse;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.CreateProductRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductFilterRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductResponse;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.search.ProductSearchRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -52,10 +53,27 @@ public class ProductController
 
     // Create product as List
     @PostMapping("/bulk")
+    @ResponseStatus(HttpStatus.CREATED)
     public List<ProductResponse> createProducts(
             @Valid @RequestBody List<CreateProductRequest> requests
     ) {
         return productService.createProducts(requests);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse createProduct(
+            @Valid @RequestBody CreateProductRequest request
+    ) {
+        return productService.create(request);
+    }
+
+    @GetMapping()
+    public Page<ProductResponse> getProducts(
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "25") Integer pageSize
+    ){
+        return productService.findAllProducts(pageNumber, pageSize);
     }
 
     @PostMapping("/search")

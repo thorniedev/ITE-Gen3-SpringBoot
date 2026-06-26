@@ -1,7 +1,7 @@
 package com.kh.istad.fswd.attendance.ecommerce.specification;
 
-import com.kh.istad.fswd.attendance.ecommerce.domain.Product;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductFilterRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.Product;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductFilterRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -158,9 +158,9 @@ public class ProductSpecification {
 
 //package com.kh.istad.fswd.attendance.ecommerce.specification;
 //
-//import com.kh.istad.fswd.attendance.ecommerce.domain.Product;
-//import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductFilterRequest;
-//import org.springframework.data.jpa.domain.Specification;
+//import com.kh.istad.fswd.attendance.ecommerce.features.product.Product;
+//import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductFilterRequest;
+//import org.springframework.data.jpa.entity.Specification;
 //
 //import java.math.BigDecimal;
 //

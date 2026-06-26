@@ -1,6 +1,6 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.product;
+package com.kh.istad.fswd.attendance.ecommerce.features.product.dto;
 
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryResponse;
 
 import java.math.BigDecimal;
 

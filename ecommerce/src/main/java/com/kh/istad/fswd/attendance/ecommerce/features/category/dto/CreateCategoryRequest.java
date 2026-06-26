@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.category;
+package com.kh.istad.fswd.attendance.ecommerce.features.category.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

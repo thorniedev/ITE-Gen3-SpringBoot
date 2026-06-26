@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.seach;
+package com.kh.istad.fswd.attendance.ecommerce.features.product.dto.search;
 
 public enum SearchOperation {
     EQUAL,

@@ -7,7 +7,10 @@ plugins {
 dependencies {
 
     implementation project(':common')
+    implementation project(':user')
+    implementation project(':payment-service')
 
+    implementation 'kh.gov.nbc.bakong_khqr:sdk-java:1.0.0.16'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -31,5 +34,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
+    // MinIo
+    implementation 'io.minio:minio:8.5.17'
 
 }

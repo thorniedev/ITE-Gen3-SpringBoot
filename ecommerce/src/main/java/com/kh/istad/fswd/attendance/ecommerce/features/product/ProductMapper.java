@@ -1,6 +1,5 @@
-package com.kh.istad.fswd.attendance.ecommerce.mapper;
+package com.kh.istad.fswd.attendance.ecommerce.features.product;
 
-import com.kh.istad.fswd.attendance.ecommerce.features.product.Product;
 import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.CreateProductRequest;
 import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductResponse;
 import org.mapstruct.Mapper;

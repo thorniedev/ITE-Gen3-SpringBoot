@@ -1,9 +1,9 @@
 package com.kh.istad.fswd.attendance.ecommerce.specification;
 
 
-import com.kh.istad.fswd.attendance.ecommerce.domain.Product;
-import com.kh.istad.fswd.attendance.ecommerce.dto.seach.ProductAdvancedSearchRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.seach.SearchRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.Product;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.search.ProductSearchRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.search.SearchRequest;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.criteria.Predicate;
@@ -29,14 +29,14 @@ public class ProductAdvancedSpecification {
     );
 
     public static Specification<Product> filter(
-            ProductAdvancedSearchRequest request
+            ProductSearchRequest request
     ) {
-        return (root, query, cb) -> {
+        return (root, criteriaQuery, criteriaBuilder) -> {
 
             List<Predicate> predicates = new ArrayList<>();
 
             if (request == null || request.filters() == null) {
-                return cb.conjunction();
+                return criteriaBuilder.conjunction();
             }
 
             for (SearchRequest filter : request.filters()) {
@@ -51,7 +51,7 @@ public class ProductAdvancedSpecification {
                         validateColumn(filter.column());
 
                         predicates.add(
-                                cb.equal(
+                                criteriaBuilder.equal(
                                         root.get(filter.column()),
                                         convertValue(filter.column(), filter.value())
                                 )
@@ -62,8 +62,8 @@ public class ProductAdvancedSpecification {
                         validateColumn(filter.column());
 
                         predicates.add(
-                                cb.like(
-                                        cb.lower(root.get(filter.column())),
+                                criteriaBuilder.like(
+                                        criteriaBuilder.lower(root.get(filter.column())),
                                         "%" + filter.value().toLowerCase() + "%"
                                 )
                         );
@@ -85,7 +85,7 @@ public class ProductAdvancedSpecification {
                         validateColumn(filter.column());
 
                         predicates.add(
-                                cb.greaterThan(
+                                criteriaBuilder.greaterThan(
                                         root.get(filter.column()),
                                         filter.value()
                                 )
@@ -96,7 +96,7 @@ public class ProductAdvancedSpecification {
                         validateColumn(filter.column());
 
                         predicates.add(
-                                cb.lessThan(
+                                criteriaBuilder.lessThan(
                                         root.get(filter.column()),
                                         filter.value()
                                 )
@@ -115,7 +115,7 @@ public class ProductAdvancedSpecification {
                         }
 
                         predicates.add(
-                                cb.between(
+                                criteriaBuilder.between(
                                         root.get(filter.column()),
                                         new BigDecimal(values[0].trim()),
                                         new BigDecimal(values[1].trim())
@@ -127,7 +127,7 @@ public class ProductAdvancedSpecification {
                         validateJoin(filter.joinTable());
 
                         predicates.add(
-                                cb.equal(
+                                criteriaBuilder.equal(
                                         root.join(filter.joinTable())
                                                 .get(filter.column()),
                                         convertJoinValue(filter.column(), filter.value())
@@ -138,19 +138,19 @@ public class ProductAdvancedSpecification {
             }
 
             if (predicates.isEmpty()) {
-                return cb.conjunction();
+                return criteriaBuilder.conjunction();
             }
 
-            ProductAdvancedSearchRequest.GlobalOperator operator =
+            ProductSearchRequest.GlobalOperator operator =
                     request.globalOperator() == null
-                            ? ProductAdvancedSearchRequest.GlobalOperator.AND
+                            ? ProductSearchRequest.GlobalOperator.AND
                             : request.globalOperator();
 
-            if (operator == ProductAdvancedSearchRequest.GlobalOperator.OR) {
-                return cb.or(predicates.toArray(new Predicate[0]));
+            if (operator == ProductSearchRequest.GlobalOperator.OR) {
+                return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
             }
 
-            return cb.and(predicates.toArray(new Predicate[0]));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 

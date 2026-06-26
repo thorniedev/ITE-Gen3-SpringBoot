@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.service;
+package com.kh.istad.fswd.attendance.ecommerce.features.order;
 
 public interface OrderLineService {
 }

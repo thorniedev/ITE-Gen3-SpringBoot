@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.category;
+package com.kh.istad.fswd.attendance.ecommerce.features.category.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -8,6 +8,7 @@ import lombok.Builder;
 public record CreateCategoryResponse(
 
         Integer id,
+        String code,
         String name,
         String description,
         String icon,

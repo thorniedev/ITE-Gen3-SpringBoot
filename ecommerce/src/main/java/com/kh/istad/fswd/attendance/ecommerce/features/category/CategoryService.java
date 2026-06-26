@@ -1,9 +1,8 @@
-package com.kh.istad.fswd.attendance.ecommerce.service;
+package com.kh.istad.fswd.attendance.ecommerce.features.category;
 
 import com.kh.istad.fswd.attendance.common.dto.PageResponse;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
-import org.springframework.data.domain.Page;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryResponse;
 
 import java.util.List;
 

@@ -1,4 +1,10 @@
 package com.kh.istad.fswd.attendance.ecommerce.features.category.dto;
 
-public record CategorySnippetResponse() {
+import lombok.Builder;
+
+@Builder
+public record CategorySnippetResponse(
+        Integer id,
+        String name
+) {
 }

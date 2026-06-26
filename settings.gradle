@@ -4,4 +4,5 @@ rootProject.name = 'ite-spring-boot'
 // Register
 include('common')
 include('ecommerce')
+include('payment-service')
 include('user')

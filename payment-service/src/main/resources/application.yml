@@ -1,0 +1,9 @@
+spring:
+  config:
+    import: optional:file:.env[.properties],optional:file:../.env[.properties],optional:file:payment-service/.env[.properties]
+
+bakong:
+  account-id: ${BAKONG_ACCOUNT_ID:}
+  base-url: ${BAKONG_BASE_URL:https://api-bakong.nbc.gov.kh}
+  api-token: ${BAKONG_API_TOKEN:}
+  email: ${BAKONG_EMAIL:${EMAIL:}}

@@ -21,8 +21,10 @@ dependencies {
 
     // Spring Web
     api 'org.springframework:spring-web:7.0.7'
+    api 'org.springframework:spring-context:7.0.7'
 
-    // Jackson
-    // implementation 'com.fasterxml.jackson.core:jackson-annotations:2.20.0'
+    // For Cloudflare R2
+    api 'software.amazon.awssdk:s3:2.25.0'
+    //implementation 'software.amazon.awssdk:apache-client:${cloudflare-aws-sdk-version}'
 
 }

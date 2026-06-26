@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.features.media;
+package com.kh.istad.fswd.attendance.ecommerce.features.media.local;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

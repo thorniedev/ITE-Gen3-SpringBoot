@@ -1,6 +1,5 @@
-package com.kh.istad.fswd.attendance.ecommerce.repository;
+package com.kh.istad.fswd.attendance.ecommerce.features.product;
 
-import com.kh.istad.fswd.attendance.ecommerce.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

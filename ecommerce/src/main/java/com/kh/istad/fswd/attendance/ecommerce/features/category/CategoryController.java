@@ -1,9 +1,8 @@
-package com.kh.istad.fswd.attendance.ecommerce.controller;
+package com.kh.istad.fswd.attendance.ecommerce.features.category;
 
 import com.kh.istad.fswd.attendance.common.dto.PageResponse;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
-import com.kh.istad.fswd.attendance.ecommerce.service.CategoryService;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class CategoryController
 {
     private final CategoryService categoryService;
 
-    @PostMapping
+    @PostMapping({"", "/single"})
     public CreateCategoryResponse createCategory(
             @Valid @RequestBody CreateCategoryRequest request
     )

@@ -1,6 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.order;
-
-import com.kh.istad.fswd.attendance.ecommerce.dto.orderline.OrderLineResponse;
+package com.kh.istad.fswd.attendance.ecommerce.features.order.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +16,7 @@ public record OrderResponse(
         String remark,
         LocalDate createdDate,
         Boolean isDeleted,
+        PaymentQrResponse payment,
         List<OrderLineResponse> orderLines,
         BigDecimal subTotal,
         BigDecimal total

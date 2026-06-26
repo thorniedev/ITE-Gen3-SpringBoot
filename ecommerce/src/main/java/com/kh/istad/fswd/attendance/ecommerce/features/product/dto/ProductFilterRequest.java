@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.product;
+package com.kh.istad.fswd.attendance.ecommerce.features.product.dto;
 
 import java.math.BigDecimal;
 

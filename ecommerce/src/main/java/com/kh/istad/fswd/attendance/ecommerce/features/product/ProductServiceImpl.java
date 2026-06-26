@@ -1,32 +1,34 @@
-package com.kh.istad.fswd.attendance.ecommerce.service.impl
+package com.kh.istad.fswd.attendance.ecommerce.features.product
 ;
 
 import com.kh.istad.fswd.attendance.common.dto.PageResponse;
 import com.kh.istad.fswd.attendance.common.exception.ConflictException;
 import com.kh.istad.fswd.attendance.common.exception.ResourceNotFoundException;
-import com.kh.istad.fswd.attendance.ecommerce.entity.Category;
-import com.kh.istad.fswd.attendance.ecommerce.entity.Product;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.CreateProductRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductFilterRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.product.ProductResponse;
-import com.kh.istad.fswd.attendance.ecommerce.dto.seach.ProductSearchRequest;
-import com.kh.istad.fswd.attendance.ecommerce.mapper.ProductMapper;
-import com.kh.istad.fswd.attendance.ecommerce.repository.CategoryRepository;
-import com.kh.istad.fswd.attendance.ecommerce.repository.ProductRepository;
-import com.kh.istad.fswd.attendance.ecommerce.service.ProductService;
+import com.kh.istad.fswd.attendance.common.util.ProductDataUtil;
+import com.kh.istad.fswd.attendance.common.util.SlugUtil;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.Category;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.CreateProductRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductFilterRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.ProductResponse;
+import com.kh.istad.fswd.attendance.ecommerce.features.product.dto.search.ProductSearchRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.CategoryRepository;
 import com.kh.istad.fswd.attendance.ecommerce.specification.ProductAdvancedSpecification;
 import com.kh.istad.fswd.attendance.ecommerce.specification.ProductSpecification;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService
 {
 
@@ -62,15 +64,8 @@ public class ProductServiceImpl implements ProductService
     @Override
     public ProductResponse create(CreateProductRequest createProductRequest) {
 
-        if (productRepository.existsByCode(createProductRequest.code())) {
-            throw new ConflictException(
-                    "Product category already exists"
-            );
-        }
-        if (productRepository.existsBySlug(createProductRequest.slug())) {
-            throw new ConflictException(
-                    "Product category already exists"
-            );
+        if (productRepository.existsByName(createProductRequest.name())) {
+            throw new ConflictException("Product has already in used!");
         }
 
         Category category = categoryRepository
@@ -79,12 +74,24 @@ public class ProductServiceImpl implements ProductService
                         "Category not found"
                 ));
 
-        Product product = productMapper.mapCreateProductRequestToProduct(createProductRequest);
+        // Transfer data from DTO to Model
+        Product product = productMapper
+                .mapCreateProductRequestToProduct(createProductRequest);
 
-        product.setCategory(category);
-        product.setIsDeleted(false);
+        // ====> Set generated system data <=========
+
+        // product.setCode(generateProductCode());
+        // product.setSlug(generateUniqueSlug(createProductRequest.name()));
+
+        // New version generated
+        product.setCode(ProductDataUtil.generateUniqueCode(productRepository::existsByCode));
+        product.setSlug(ProductDataUtil.generateUniqueSlug(createProductRequest.name(), productRepository::existsBySlug));
+
+        product.setCategory(category); // -> done
+        product.setIsDeleted(false); // -> done
         product.setIsAvailable(createProductRequest.isAvailable() != null ? createProductRequest.isAvailable() : true);
-        productRepository.save(product);
+
+        product = productRepository.save(product);
 
         return productMapper.mapProductToProductResponse(product);
     }
@@ -99,23 +106,34 @@ public class ProductServiceImpl implements ProductService
     }
 
     @Override
-    public PageResponse<ProductResponse> findAllProducts(Integer pageNumber, Integer pageSize) {
+    public Page<ProductResponse> findAllProducts(Integer pageNumber, Integer pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
 
-        Page<ProductResponse> page =
-                productRepository.findAll(pageable)
-                        .map(productMapper::mapProductToProductResponse);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortById);
 
-        return PageResponse.<ProductResponse>builder()
-                .contents(page.getContent())
-                .pageNumber(page.getNumber())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
-                .first(page.isFirst())
-                .last(page.isLast())
-                .build();
+        Page<Product> products = productRepository.findAll(pageable);
+
+        return products.map(productMapper::mapProductToProductResponse);
+
+//                Page<ProductResponse> page =
+//                productRepository.findAll(pageable)
+//                        .map(productMapper::mapProductToProductResponse);
+
+//        return PageResponse.<ProductResponse>builder()
+//                .contents(page.getContent())
+//                .pageNumber(page.getNumber())
+//                .pageSize(page.getSize())
+//                .totalElements(page.getTotalElements())
+//                .totalPages(page.getTotalPages())
+//                .first(page.isFirst())
+//                .last(page.isLast())
+//                .build();
+
+        //        Page<Product> products = productRepository.findAll(pageable);
+        //
+        //        return products
+
     }
 
     @Override
@@ -132,4 +150,29 @@ public class ProductServiceImpl implements ProductService
     public ProductResponse updateProductById(Integer id, CreateProductRequest createProductRequest) {
         return null;
     }
+
+
+    // Utils (Not yet used)
+    private String generateProductCode() {
+        String code;
+
+        do {
+            code = "ITE-3RD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        } while (productRepository.existsByCode(code));
+
+        return code;
+    }
+
+    private String generateUniqueSlug(String name) {
+        String baseSlug = SlugUtil.generateSlug(name);
+        String slug = baseSlug;
+        int suffix = 1;
+
+        while (productRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + suffix;
+            suffix++;
+        }
+        return slug;
+    }
+
 }

@@ -1,26 +1,32 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.product;
+package com.kh.istad.fswd.attendance.ecommerce.features.product.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public record CreateProductRequest
         (
-        @NotBlank
-        String code,
-        @NotBlank String name,
-        @NotBlank String slug,
+
+        @NotBlank(message = "Name is required")
+        @Size(max = 255)
+        String name,
+
         String thumbnail,
-        @NotNull
+        
+        @NotNull(message = "UnitPrice is required")
         @Positive
         BigDecimal unitPrice,
-        @NotNull @PositiveOrZero
-        Integer qty,
-        String description,
-        Boolean isAvailable,
-        @NotNull Integer categoryId
 
+        @NotNull(message = "Quantity is required")
+        @PositiveOrZero
+        Integer qty,
+
+        @Size(max = 500)
+        String description,
+
+        Boolean isAvailable,
+
+        @NotNull(message = "categoryId is required")
+        @Positive
+        Integer categoryId
         ){ }

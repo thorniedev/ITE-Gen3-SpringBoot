@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.dto.orderline;
+package com.kh.istad.fswd.attendance.ecommerce.features.order.dto;
 
 import java.math.BigDecimal;
 

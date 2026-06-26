@@ -1,6 +1,5 @@
-package com.kh.istad.fswd.attendance.ecommerce.repository;
+package com.kh.istad.fswd.attendance.ecommerce.features.order;
 
-import com.kh.istad.fswd.attendance.ecommerce.entity.OrderLine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

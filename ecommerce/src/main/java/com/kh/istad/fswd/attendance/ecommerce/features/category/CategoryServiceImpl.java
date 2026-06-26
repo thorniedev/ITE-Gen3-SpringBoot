@@ -1,15 +1,12 @@
-package com.kh.istad.fswd.attendance.ecommerce.service.impl
+package com.kh.istad.fswd.attendance.ecommerce.features.category
 ;
 
 import com.kh.istad.fswd.attendance.common.dto.PageResponse;
 import com.kh.istad.fswd.attendance.common.exception.ConflictException;
 import com.kh.istad.fswd.attendance.common.exception.ResourceNotFoundException;
-import com.kh.istad.fswd.attendance.ecommerce.entity.Category;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryRequest;
-import com.kh.istad.fswd.attendance.ecommerce.dto.category.CreateCategoryResponse;
-import com.kh.istad.fswd.attendance.ecommerce.mapper.CategoryMapper;
-import com.kh.istad.fswd.attendance.ecommerce.repository.CategoryRepository;
-import com.kh.istad.fswd.attendance.ecommerce.service.CategoryService;
+import com.kh.istad.fswd.attendance.common.util.CategoryDataUtil;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryRequest;
+import com.kh.istad.fswd.attendance.ecommerce.features.category.dto.CreateCategoryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,72 +29,72 @@ public class CategoryServiceImpl implements CategoryService
     public CreateCategoryResponse createNewCategory(CreateCategoryRequest createCategoryRequest){
 
         //        log.info("createNewCategory");
-    //
-    //
-    //        Category parentCategory = null;
-    //
-    //        boolean isExisting = categoryRepository
-    //                .existsByName(createCategoryRequest.name());
-    //
-    //        if (isExisting)
-    //            throw  new ResponseStatusException(
-    //                    HttpStatus.CONFLICT,
-    //                    "Create Category already exists"
-    //            );
-    //
-    //        if (createCategoryRequest.parentCategoryId() != null ) {
-    //            categoryRepository.findById(createCategoryRequest.parentCategoryId())
-    //                    .orElseThrow(() -> new ResponseStatusException(
-    //                            HttpStatus.NOT_FOUND,
-    //                            "Parent Category Not Found"
-    //                    ));
-    //        }
-    //
-    //        // Map
-    //        Category category = new Category();
-    //        category.setName(createCategoryRequest.name());
-    //        category.setDescription(createCategoryRequest.description());
-    //        category.setIcon(createCategoryRequest.icon());
-    //        category.setIsDeleted(false);
-    //        category.setParentCategory(parentCategory);
-    //
-    //        category = categoryRepository.save(category);
-    //
-    //        // Insert if primary key is null
-    //        // Update if primary key has value
-    //        category = categoryRepository.save(category);
-    //
-    //        CreateCategoryResponse parentResponse = null;
-    //
-    //        if (parentCategory != null) {
-    //            parentResponse = CreateCategoryResponse.builder()
-    //                    .id(parentCategory.getId())
-    //                    .name(parentCategory.getName())
-    //                    .description(parentCategory.getDescription())
-    //
-    //                    // system provide
-    //                    .icon(parentCategory.getIcon())
-    //                    .isDeleted(parentCategory.getIsDeleted())
-    //                    .build();
-    //        }
-    //
-    //        // map entity to response
-    //
-    //        // CreateCategoryResponse parenCategoryResponse = CreateCategoryResponse.builder();
-    //
-    //
-    //        return CreateCategoryResponse.builder()
-    //                .id(category.getId())
-    //                .name(category.getName())
-    //                .description(category.getDescription())
-    //                .icon(category.getIcon())
-    //                .isDeleted(category.getIsDeleted())
-    //                .createCategoryResponse(parentResponse)
-    //                .build();
+        //
+        //
+        //        Category parentCategory = null;
+        //
+        //        boolean isExisting = categoryRepository
+        //                .existsByName(createCategoryRequest.name());
+        //
+        //        if (isExisting)
+        //            throw  new ResponseStatusException(
+        //                    HttpStatus.CONFLICT,
+        //                    "Create Category already exists"
+        //            );
+        //
+        //        if (createCategoryRequest.parentCategoryId() != null ) {
+        //            categoryRepository.findById(createCategoryRequest.parentCategoryId())
+        //                    .orElseThrow(() -> new ResponseStatusException(
+        //                            HttpStatus.NOT_FOUND,
+        //                            "Parent Category Not Found"
+        //                    ));
+        //        }
+        //
+        //        // Map
+        //        Category category = new Category();
+        //        category.setName(createCategoryRequest.name());
+        //        category.setDescription(createCategoryRequest.description());
+        //        category.setIcon(createCategoryRequest.icon());
+        //        category.setIsDeleted(false);
+        //        category.setParentCategory(parentCategory);
+        //
+        //        category = categoryRepository.save(category);
+        //
+        //        // Insert if primary key is null
+        //        // Update if primary key has value
+        //        category = categoryRepository.save(category);
+        //
+        //        CreateCategoryResponse parentResponse = null;
+        //
+        //        if (parentCategory != null) {
+        //            parentResponse = CreateCategoryResponse.builder()
+        //                    .id(parentCategory.getId())
+        //                    .name(parentCategory.getName())
+        //                    .description(parentCategory.getDescription())
+        //
+        //                    // system provide
+        //                    .icon(parentCategory.getIcon())
+        //                    .isDeleted(parentCategory.getIsDeleted())
+        //                    .build();
+        //        }
+        //
+        //        // map entity to response
+        //
+        //        // CreateCategoryResponse parenCategoryResponse = CreateCategoryResponse.builder();
+        //
+        //
+        //        return CreateCategoryResponse.builder()
+        //                .id(category.getId())
+        //                .name(category.getName())
+        //                .description(category.getDescription())
+        //                .icon(category.getIcon())
+        //                .isDeleted(category.getIsDeleted())
+        //                .createCategoryResponse(parentResponse)
+        //                .build();
 
         if (categoryRepository.existsByName(createCategoryRequest.name())) {
             throw new ConflictException(
-                   // HttpStatus.CONFLICT,
+                    // HttpStatus.CONFLICT,
                     "Category already exists"
             );
         }
@@ -115,9 +113,13 @@ public class CategoryServiceImpl implements CategoryService
         Category category =
                 categoryMapper.mapCreateCategoryRequestToCategory(createCategoryRequest);
 
-        // system generate
+        // system generated data
         category.setParentCategory(parentCategory);
-        category.setIsDeleted(false);   // was never set -> persisted as null
+
+        // Generate code
+        // category.setCode(generateCategoryCode());
+        category.setCode(CategoryDataUtil.generateUniqueCode(categoryRepository::existsByCode));
+        category.setIsDeleted(false);
 
         // Insert if primary key is null
         // Update if primary key has value
@@ -133,7 +135,11 @@ public class CategoryServiceImpl implements CategoryService
 
         List<Category> categories = requests.stream()
                 .map(categoryMapper::mapCreateCategoryRequestToCategory)
-                .peek(category -> category.setIsDeleted(false))
+                .peek(category -> {
+                    //category.setCode(generateCategoryCode());
+                    category.setCode(CategoryDataUtil.generateUniqueCode(categoryRepository::existsByCode));
+                    category.setIsDeleted(false);
+                })
                 .toList();
 
         List<Category> savedCategories =
@@ -178,7 +184,7 @@ public class CategoryServiceImpl implements CategoryService
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         // HttpStatus.NOT_FOUND,
-                        "Category Not Found"
+                        "Category has not found!"
                 ));
 
         return categoryMapper.mapCategoryToCreateCategoryResponse(category);
@@ -239,7 +245,7 @@ public class CategoryServiceImpl implements CategoryService
                        // HttpStatus.NOT_FOUND,
                        "Category Not Found"
                ));
-       // prevent self-parent
+        // prevent self-parent
         if (createCategoryRequest.parentCategoryId() != null
                 && createCategoryRequest.parentCategoryId().equals(id)) {
                 throw new ConflictException(
@@ -298,20 +304,29 @@ public class CategoryServiceImpl implements CategoryService
             category.setParentCategory(parentCategory);
         }
 
-        //        if (request.parentCategoryId() != null) {
-        //            Category parentCategory = categoryRepository
-        //                    .findById(id)
-        //                    .orElseThrow(() -> new ResourceNotFoundException(
-        //                            // HttpStatus.NOT_FOUND,
-        //                            "Parent Category Not Found"
-        //                    ));
-        //            category.setParentCategory(parentCategory);
-        //        }
-
         category = categoryRepository.save(category);
 
         return categoryMapper.mapCategoryToCreateCategoryResponse(category);
     }
 
+    /**
+     * Generates a unique category code following the format ITE-CAT-b3f91a2-*******
+     *
+     * @return the generated category code string
+     * @author Kim Chanthorn
+     * @since June 23, 2026
+     */
+    private String generateCategoryCode() {
+        String code;
+
+        do {
+            String cleanUuid = UUID.randomUUID().toString().replaceAll("-", "");
+            String uniqueSuffix = cleanUuid.substring(0, 7);
+            code = "ITE-CAT-" + uniqueSuffix;
+        } while (categoryRepository.existsByCode(code));
+
+        return code;
+
+    }
 
 }

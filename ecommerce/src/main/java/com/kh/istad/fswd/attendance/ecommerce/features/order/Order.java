@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.ecommerce.entity;
+package com.kh.istad.fswd.attendance.ecommerce.features.order;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,10 @@ public class Order
     private String remark;
     private LocalDate createdDate;
     private Boolean isDeleted;
+    @Column(columnDefinition = "TEXT")
+    private String paymentQr;
+    private String paymentMd5;
+    private String paymentStatus;
 
     // To orderLine
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

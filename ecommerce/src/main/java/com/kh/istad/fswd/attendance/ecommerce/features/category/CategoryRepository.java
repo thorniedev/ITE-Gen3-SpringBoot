@@ -1,6 +1,5 @@
-package com.kh.istad.fswd.attendance.ecommerce.repository;
+package com.kh.istad.fswd.attendance.ecommerce.features.category;
 
-import com.kh.istad.fswd.attendance.ecommerce.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +11,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer>
 
 {
     boolean existsByName(String name);
+
+    boolean existsByCode(String code);
 
     boolean existsByNameAndIdNot(String name, Integer id);
 

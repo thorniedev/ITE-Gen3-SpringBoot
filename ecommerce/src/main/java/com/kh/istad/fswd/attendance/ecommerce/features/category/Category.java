@@ -1,5 +1,6 @@
-package com.kh.istad.fswd.attendance.ecommerce.entity;
+package com.kh.istad.fswd.attendance.ecommerce.features.category;
 
+import com.kh.istad.fswd.attendance.ecommerce.features.product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

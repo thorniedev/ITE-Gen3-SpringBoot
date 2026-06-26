@@ -1,6 +1,5 @@
-package com.kh.istad.fswd.attendance.ecommerce.mapper;
+package com.kh.istad.fswd.attendance.ecommerce.features.order;
 
-import com.kh.istad.fswd.attendance.ecommerce.features.order.OrderLine;
 import com.kh.istad.fswd.attendance.ecommerce.features.order.dto.OrderLineRequest;
 import com.kh.istad.fswd.attendance.ecommerce.features.order.dto.OrderLineResponse;
 import org.mapstruct.Mapper;

@@ -1,4 +1,4 @@
-package com.kh.istad.fswd.attendance.finalproject.config;
+package com.kh.istad.fswd.attendance.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +13,13 @@ import java.net.URI;
 @Configuration
 public class CloudflareR2Config {
 
-    @Value("${cloudflare.r2.access-key}")
+    @Value("${cloudflare.r2.access-key:local-r2-access-key}")
     private String accessKey;
 
-    @Value("${cloudflare.r2.secret-key}")
+    @Value("${cloudflare.r2.secret-key:local-r2-secret-key}")
     private String secretKey;
 
-    @Value("${cloudflare.r2.endpoint}")
+    @Value("${cloudflare.r2.endpoint:https://example.r2.cloudflarestorage.com}")
     private String endpoint;
 
     @Bean
@@ -29,9 +29,9 @@ public class CloudflareR2Config {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)
                 ))
-                .region(Region.US_EAST_1) // R2 ignores region, but SDK requires a value
+                .region(Region.US_EAST_1)
                 .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true) // Required for R2 compatibility
+                        .pathStyleAccessEnabled(true)
                         .build())
                 .build();
     }

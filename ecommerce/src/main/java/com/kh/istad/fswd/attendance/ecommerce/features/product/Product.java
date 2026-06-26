@@ -1,5 +1,7 @@
-package com.kh.istad.fswd.attendance.ecommerce.entity;
+package com.kh.istad.fswd.attendance.ecommerce.features.product;
 
+import com.kh.istad.fswd.attendance.ecommerce.features.category.Category;
+import com.kh.istad.fswd.attendance.ecommerce.features.order.OrderLine;
 import jakarta.persistence.*;
 import lombok.*;
 
