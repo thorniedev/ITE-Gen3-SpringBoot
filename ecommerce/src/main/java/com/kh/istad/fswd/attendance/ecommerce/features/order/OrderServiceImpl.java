@@ -14,6 +14,9 @@ import kh.gov.nbc.bakong_khqr.model.KHQRCurrency;
 import kh.gov.nbc.bakong_khqr.model.KHQRResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,9 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String PAYMENT_PENDING = "PENDING";
     private static final String PAYMENT_PAID = "PAID";
+    private static final String PAYMENT_CANCELLED = "CANCELLED";
+    private static final String PAYMENT_FAILED = "FAILED";
+    private static final String PAYMENT_EXPIRED = "EXPIRED";
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -126,6 +132,93 @@ public class OrderServiceImpl implements OrderService {
         return toResponse(order, calculateSubTotal(order), calculateTotal(order));
     }
 
+    @Override
+    public Page<OrderResponse> findAll(int pageNumber, int pageSize) {
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortById);
+
+        Page<Order> orders = orderRepository.findByIsDeletedFalse(pageRequest);
+
+        return orders.map(order ->
+                toResponse(order, calculateSubTotal(order), calculateTotal(order))
+        );
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse cancel(UUID id) {
+        Order order = findOrder(id);
+        cancelOrder(order);
+        Order savedOrder = orderRepository.save(order);
+        return toResponse(savedOrder, calculateSubTotal(savedOrder), calculateTotal(savedOrder));
+    }
+
+    @Override
+    @Transactional
+    public void softDelete(UUID id) {
+        Order order = findOrder(id);
+        if (PAYMENT_PAID.equals(order.getPaymentStatus()) || Boolean.TRUE.equals(order.getStatus())) {
+            throw new BadRequestException("Paid order cannot be soft deleted");
+        }
+
+        if (PAYMENT_PENDING.equals(order.getPaymentStatus())) {
+            cancelOrder(order);
+        }
+
+        order.setIsDeleted(true);
+        orderRepository.save(order);
+    }
+
+    @Override
+    @Transactional
+    public void hardDelete(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+
+        if (PAYMENT_PAID.equals(order.getPaymentStatus()) || Boolean.TRUE.equals(order.getStatus())) {
+            throw new BadRequestException("Paid order cannot be hard deleted");
+        }
+
+        if (PAYMENT_PENDING.equals(order.getPaymentStatus())) {
+            throw new BadRequestException("Cancel order before hard delete");
+        }
+
+        orderRepository.delete(order);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse updatePaymentStatus(UUID id, String paymentStatus) {
+        Order order = findOrder(id);
+        String normalizedStatus = normalizePaymentStatus(paymentStatus);
+
+        if (PAYMENT_PAID.equals(order.getPaymentStatus()) && !PAYMENT_PAID.equals(normalizedStatus)) {
+            throw new BadRequestException("Paid order payment status cannot be changed");
+        }
+
+        if (PAYMENT_PAID.equals(normalizedStatus)) {
+            if (PAYMENT_CANCELLED.equals(order.getPaymentStatus())
+                    || PAYMENT_FAILED.equals(order.getPaymentStatus())
+                    || PAYMENT_EXPIRED.equals(order.getPaymentStatus())) {
+                throw new BadRequestException("Cannot mark restored-stock order as paid");
+            }
+            order.setStatus(true);
+        } else {
+            if (PAYMENT_PENDING.equals(order.getPaymentStatus())
+                    && (PAYMENT_CANCELLED.equals(normalizedStatus)
+                    || PAYMENT_FAILED.equals(normalizedStatus)
+                    || PAYMENT_EXPIRED.equals(normalizedStatus))) {
+                restoreStock(order);
+            }
+            order.setStatus(false);
+        }
+
+        order.setPaymentStatus(normalizedStatus);
+        Order savedOrder = orderRepository.save(order);
+        return toResponse(savedOrder, calculateSubTotal(savedOrder), calculateTotal(savedOrder));
+    }
+
     // Checks if Bakong transaction is paid
     @Override
     @Transactional
@@ -149,6 +242,50 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return response;
+    }
+
+    private void cancelOrder(Order order) {
+        if (PAYMENT_PAID.equals(order.getPaymentStatus()) || Boolean.TRUE.equals(order.getStatus())) {
+            throw new BadRequestException("Paid order cannot be cancelled");
+        }
+
+        if (PAYMENT_CANCELLED.equals(order.getPaymentStatus())) {
+            return;
+        }
+
+        if (!PAYMENT_PENDING.equals(order.getPaymentStatus())) {
+            throw new BadRequestException("Only pending order can be cancelled");
+        }
+
+        restoreStock(order);
+        order.setStatus(false);
+        order.setPaymentStatus(PAYMENT_CANCELLED);
+    }
+
+    private void restoreStock(Order order) {
+        if (order.getOrderLines() == null) {
+            return;
+        }
+
+        for (OrderLine orderLine : order.getOrderLines()) {
+            Product product = orderLine.getProduct();
+            if (product != null) {
+                product.setQty(product.getQty() + orderLine.getQty());
+                productRepository.save(product);
+            }
+        }
+    }
+
+    private String normalizePaymentStatus(String paymentStatus) {
+        String normalizedStatus = paymentStatus == null ? "" : paymentStatus.trim().toUpperCase();
+        if (!PAYMENT_PENDING.equals(normalizedStatus)
+                && !PAYMENT_PAID.equals(normalizedStatus)
+                && !PAYMENT_CANCELLED.equals(normalizedStatus)
+                && !PAYMENT_FAILED.equals(normalizedStatus)
+                && !PAYMENT_EXPIRED.equals(normalizedStatus)) {
+            throw new BadRequestException("Invalid payment status");
+        }
+        return normalizedStatus;
     }
 
     private void validateProduct(Product product, Integer requestedQty) {

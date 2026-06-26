@@ -2,31 +2,19 @@ services:
   sonarqube:
     image: sonarqube:community
     container_name: sonarqube
-    depends_on:
-      - sonar-db
     ports:
       - "9000:9000"
     environment:
-      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonar
-      SONAR_JDBC_USERNAME: sonar
-      SONAR_JDBC_PASSWORD: sonar
+      # From inside Docker, use host.docker.internal to reach PostgreSQL on your Mac.
+      SONAR_JDBC_URL: ${SONAR_JDBC_URL:-jdbc:postgresql://host.docker.internal:5850/sonarqube}
+      SONAR_JDBC_USERNAME: ${DB_USER:-admin}
+      SONAR_JDBC_PASSWORD: ${DB_PASSWORD:-admin@123}
     volumes:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
 
-  sonar-db:
-    image: postgres:16
-    container_name: sonar-db
-    environment:
-      POSTGRES_USER: sonar
-      POSTGRES_PASSWORD: sonar
-      POSTGRES_DB: sonar
-    volumes:
-      - sonar_db_data:/var/lib/postgresql/data
-
 volumes:
   sonarqube_data:
   sonarqube_logs:
   sonarqube_extensions:
-  sonar_db_data:
