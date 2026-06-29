@@ -95,6 +95,7 @@ pipeline {
                             test -f .env
 
                             ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} eval "\\$compose_cmd -f ${REMOTE_COMPOSE_FILE} pull ecommerce"
+                            docker rm -f ite-ecommerce >/dev/null 2>&1 || true
                             ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} eval "\\$compose_cmd -f ${REMOTE_COMPOSE_FILE} up -d"
                         "
                         '''
