@@ -1,0 +1,54 @@
+name: ite-spring-boot-prod
+
+services:
+  ecommerce:
+    image: ${ECOMMERCE_IMAGE:-ghcr.io/thorniedev/ite-gen3-springboot-ecommerce:latest}
+    container_name: ite-ecommerce
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-7070}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://host.docker.internal:5850/ite}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-admin}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-admin@123}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+
+      KEYCLOAK_BASE_URL: ${KEYCLOAK_BASE_URL:-http://host.docker.internal:9090}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-ite}
+      KEYCLOAK_ADMIN_REALM: ${KEYCLOAK_ADMIN_REALM:-master}
+      KEYCLOAK_ADMIN_CLIENT_ID: ${KEYCLOAK_ADMIN_CLIENT_ID:-admin-cli}
+      KEYCLOAK_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-iam@123}
+      KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://host.docker.internal:9090/realms/ite}
+      KEYCLOAK_JWK_SET_URI: ${KEYCLOAK_JWK_SET_URI:-http://host.docker.internal:9090/realms/ite/protocol/openid-connect/certs}
+
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://host.docker.internal:9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-admin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-qwerqwer}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-ite-bucket}
+
+      FILE_STORAGE_LOCATION: ${FILE_STORAGE_LOCATION:-/app/uploads}
+      FILE_BASE_URI: ${FILE_BASE_URI:-http://localhost:7070/file}
+
+      CLOUDFLARE_R2_ENDPOINT: ${CLOUDFLARE_R2_ENDPOINT:-}
+      CLOUDFLARE_R2_PUBLIC_URL: ${CLOUDFLARE_R2_PUBLIC_URL:-}
+      CLOUDFLARE_R2_BUCKET_NAME: ${CLOUDFLARE_R2_BUCKET_NAME:-ite-upload}
+      CLOUDFLARE_R2_IMAGE_FOLDER: ${CLOUDFLARE_R2_IMAGE_FOLDER:-images}
+      CLOUDFLARE_R2_MAX_IMAGE_SIZE: ${CLOUDFLARE_R2_MAX_IMAGE_SIZE:-5242880}
+      CLOUDFLARE_R2_ACCESS_KEY: ${CLOUDFLARE_R2_ACCESS_KEY:-}
+      CLOUDFLARE_R2_SECRET_KEY: ${CLOUDFLARE_R2_SECRET_KEY:-}
+
+      BAKONG_ACCOUNT_ID: ${BAKONG_ACCOUNT_ID:-}
+      BAKONG_BASE_URL: ${BAKONG_BASE_URL:-https://api-bakong.nbc.gov.kh}
+      BAKONG_API_TOKEN: ${BAKONG_API_TOKEN:-}
+      BAKONG_EMAIL: ${BAKONG_EMAIL:-}
+      ECOMMERCE_PAYMENT_CURRENCY: ${ECOMMERCE_PAYMENT_CURRENCY:-USD}
+    ports:
+      - "${ECOMMERCE_PORT:-7070}:7070"
+    volumes:
+      - ecommerce_uploads:/app/uploads
+
+volumes:
+  ecommerce_uploads:
