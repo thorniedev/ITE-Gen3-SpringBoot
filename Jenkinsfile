@@ -39,8 +39,8 @@ pipeline {
                     sh """
                     ssh ${SERVER_USER}@${SERVER_HOST} '
                     cd ${SERVER_PATH} &&
-                    docker compose down &&
-                    docker compose up -d --build
+                    docker-compose down &&
+                    docker-compose up -d --build
                     '
                     """
                 }
