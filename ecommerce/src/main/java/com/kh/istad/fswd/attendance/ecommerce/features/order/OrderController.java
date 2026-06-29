@@ -74,7 +74,7 @@ public class OrderController {
         orderService.hardDelete(id);
     }
 
-    @PatchMapping("/{id}/payment-status")
+    @PutMapping("/{id}/payment-status")
     public OrderResponse updatePaymentStatus(
             @PathVariable UUID id,
             @Valid @RequestBody UpdatePaymentStatusRequest request

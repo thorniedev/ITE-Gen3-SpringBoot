@@ -12,7 +12,6 @@
    (only after CANCELLED and never PAID)
 6. Set Payment status by ID 'api/v1/orders/{id}/status' [PUT]
 
-
 ### Sonarqube 
 1. Run Analysis ```./gradlew clean test sonar -Dsonar.token=YOUR_TOKEN```
 2. With .ENV
