@@ -6,6 +6,8 @@ pipeline {
         SERVER_HOST = "18.142.29.184"
         SERVER_USER = "ubuntu"
         SERVER_PATH = "/home/ubuntu/app/ite-commerce"
+        LOCAL_COMPOSE_FILE = "docker-compose.prod.yml"
+        REMOTE_COMPOSE_FILE = "docker-compose.yml"
     }
 
     stages {
@@ -60,7 +62,7 @@ pipeline {
                 sshagent(['ec2-ssh-key']) {
                     sh '''
                     ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${SERVER_PATH}"
-                    scp docker-compose.prod.yml ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/docker-compose.yml
+                    scp ${LOCAL_COMPOSE_FILE} ${SERVER_USER}@${SERVER_HOST}:${SERVER_PATH}/${REMOTE_COMPOSE_FILE}
                     '''
                 }
             }
@@ -78,9 +80,9 @@ pipeline {
                         ssh ${SERVER_USER}@${SERVER_HOST} "
                             echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin &&
                             cd ${SERVER_PATH} &&
-                            docker-compose down &&
-                            docker-compose pull &&
-                            docker-compose up -d
+                            test -f .env &&
+                            ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} docker compose -f ${REMOTE_COMPOSE_FILE} pull ecommerce &&
+                            ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} docker compose -f ${REMOTE_COMPOSE_FILE} up -d
                         "
                         '''
                     }
