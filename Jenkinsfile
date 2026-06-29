@@ -28,7 +28,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build \
+                echo $PATH
+                /usr/bin/docker --version
+
+                /usr/bin/docker build \
                   -t ${IMAGE_NAME}:${BUILD_NUMBER} \
                   -t ${IMAGE_NAME}:latest \
                   ./ecommerce
@@ -44,9 +47,9 @@ pipeline {
                     passwordVariable: 'GHCR_TOKEN'
                 )]) {
                     sh '''
-                    echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
-                    docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-                    docker push ${IMAGE_NAME}:latest
+                    echo "$GHCR_TOKEN" | /usr/bin/docker login ghcr.io -u "$GHCR_USER" --password-stdin
+                    /usr/bin/docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                    /usr/bin/docker push ${IMAGE_NAME}:latest
                     '''
                 }
             }
