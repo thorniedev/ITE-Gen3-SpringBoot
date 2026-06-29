@@ -7,7 +7,7 @@ pipeline {
         SERVER_USER = "ubuntu"
         SERVER_PATH = "/home/ubuntu/app/ite-commerce"
         LOCAL_COMPOSE_FILE = "docker-compose.prod.yml"
-        REMOTE_COMPOSE_FILE = "docker-compose.yml"
+        REMOTE_COMPOSE_FILE = "docker-compose.prod.yml"
     }
 
     stages {
