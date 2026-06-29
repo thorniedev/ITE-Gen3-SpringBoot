@@ -20,8 +20,18 @@ public class SecurityConfig {
             Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakJwtAuthenticationConverter
     ) throws Exception {
         return http
+                // TODO
+
+                // 1. CSRF -> Disable no need form
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 2.Disable Form Login
+                .formLogin(AbstractHttpConfigurer::disable)
+
+                // 4- Set REST API to stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Configure Endpoints
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
@@ -32,6 +42,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                // Security
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter))
                 )
