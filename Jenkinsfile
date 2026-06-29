@@ -77,26 +77,26 @@ pipeline {
                 )]) {
                     sshagent(['ec2-ssh-key']) {
                         sh '''
-                        ssh ${SERVER_USER}@${SERVER_HOST} 'bash -s' <<EOF
-                        set -e
+                        ssh ${SERVER_USER}@${SERVER_HOST} "
+                            set -e
 
-                        if docker compose version >/dev/null 2>&1; then
-                            COMPOSE_CMD="docker compose"
-                        elif command -v docker-compose >/dev/null 2>&1; then
-                            COMPOSE_CMD="docker-compose"
-                        else
-                            echo "Docker Compose is not installed on the server." >&2
-                            echo "Install Compose v2 or docker-compose v1, then rerun Jenkins." >&2
-                            exit 1
-                        fi
+                            if docker compose version >/dev/null 2>&1; then
+                                compose_cmd='docker compose'
+                            elif command -v docker-compose >/dev/null 2>&1; then
+                                compose_cmd='docker-compose'
+                            else
+                                echo 'Docker Compose is not installed on the server.' >&2
+                                echo 'Install Compose v2 or docker-compose v1, then rerun Jenkins.' >&2
+                                exit 1
+                            fi
 
-                        echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
-                        cd ${SERVER_PATH}
-                        test -f .env
+                            echo '${GHCR_TOKEN}' | docker login ghcr.io -u '${GHCR_USER}' --password-stdin
+                            cd ${SERVER_PATH}
+                            test -f .env
 
-                        ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} \$COMPOSE_CMD -f ${REMOTE_COMPOSE_FILE} pull ecommerce
-                        ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} \$COMPOSE_CMD -f ${REMOTE_COMPOSE_FILE} up -d
-EOF
+                            ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} eval "\\$compose_cmd -f ${REMOTE_COMPOSE_FILE} pull ecommerce"
+                            ECOMMERCE_IMAGE=${IMAGE_NAME}:${BUILD_NUMBER} eval "\\$compose_cmd -f ${REMOTE_COMPOSE_FILE} up -d"
+                        "
                         '''
                     }
                 }
