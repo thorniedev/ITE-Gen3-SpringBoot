@@ -22,7 +22,7 @@ file:
   base-uri: http://localhost:7070${file.client-path}
 
 minio:
-  endpoint: http://18.142.29.184:9000
+  endpoint: ${MINIO_ENDPOINT:http://18.142.29.184:9000}
   access-key: admin
   secret-key: qwerqwer
   bucket-name: ite-bucket
@@ -45,9 +45,11 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/ite}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
+          #issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/ite}
+          #jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
 
   datasource:
-    url: jdbc:postgresql://localhost:5850/ite
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5850/ite}
     username: admin
     password: admin@123
     driver-class-name: org.postgresql.Driver

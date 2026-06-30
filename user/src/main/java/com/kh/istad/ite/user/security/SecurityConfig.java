@@ -36,8 +36,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         .requestMatchers("/file/**").permitAll()
+
                         // Public image upload endpoint
                         .requestMatchers(HttpMethod.POST, "/api/v1/images/upload").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/minio/**").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
