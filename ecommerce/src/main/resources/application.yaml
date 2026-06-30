@@ -68,13 +68,11 @@ cloudflare:
   r2:
     image-folder: ${CLOUDFLARE_R2_IMAGE_FOLDER:images}
     max-image-size: ${CLOUDFLARE_R2_MAX_IMAGE_SIZE:5242880}
-
-    access-key: 34ea564a0628b4a6a83788b122de3af3
-    secret-key: 1befb19948768148045b2631c879093209dfd620ad9f95c8706b758635b8cc3f
-
-    endpoint: ${CLOUDFLARE_R2_ENDPOINT:https://bf8bd6c44f656fd86a5108b9ba2929e1.r2.cloudflarestorage.com}
-    public-url: ${CLOUDFLARE_R2_PUBLIC_URL:https://pub-42203a40bd07430bac532c8c4bdc7b9d.r2.dev}
-    bucket-name: ite-upload
+    access-key: ${CLOUDFLARE_R2_ACCESS_KEY}
+    secret-key: ${CLOUDFLARE_R2_SECRET_KEY}
+    endpoint: ${CLOUDFLARE_R2_ENDPOINT}
+    public-url: ${CLOUDFLARE_R2_PUBLIC_URL}
+    bucket-name: ${CLOUDFLARE_R2_BUCKET_NAME}
 
 bakong:
   account-id: ${BAKONG_ACCOUNT_ID:}
