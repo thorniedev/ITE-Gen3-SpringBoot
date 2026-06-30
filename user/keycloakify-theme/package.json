@@ -12,7 +12,7 @@
         "clean:dist": "node -e \"const fs=require('fs'); fs.rmSync('dist',{recursive:true,force:true});\"",
         "build": "tsc && vite build",
         "build-keycloak-theme": "npm run clean:dist && npm run build && keycloakify build",
-        "build:deploy": "npm run build-keycloak-theme && mkdir -p /Users/thornie/Documents/ITE-Gen3/Spring-Framework/ite-spring-boot/user/keycloak/providers && cp dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar /Users/thornie/Documents/ITE-Gen3/Spring-Framework/ite-spring-boot/user/keycloak/providers/ecommerce-products-keycloak-theme.jar",
+        "build:deploy": "npm run build-keycloak-theme && scp -i ~/.ssh/icheck-server.pem dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar ubuntu@18.142.29.184:/home/ubuntu/app/oauth2/keycloak/providers/ecommerce-products-keycloak-theme.jar",
         "storybook": "storybook dev -p 6006",
         "format": "prettier . --write"
     },
