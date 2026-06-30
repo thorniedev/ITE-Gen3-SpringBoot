@@ -49,7 +49,7 @@ spring:
           #jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL_PROD:jdbc:postgresql://localhost:5850/ite}
+    url: ${SPRING_DATASOURCE:jdbc:postgresql://localhost:5850/ite}
     username: admin
     password: admin@123
     driver-class-name: org.postgresql.Driver
