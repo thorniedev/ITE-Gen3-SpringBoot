@@ -6,7 +6,7 @@ app:
   port: "${server.port:7070}"
 
   keycloak:
-    base-url: ${KEYCLOAK_BASE_URL:http://localhost:9090}
+    base-url: ${KEYCLOAK_BASE_URL_PROD:http://localhost:9090}
     realm: ${KEYCLOAK_REALM:ite}
     admin-realm: ${KEYCLOAK_ADMIN_REALM:master}
     admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
@@ -22,7 +22,7 @@ file:
   base-uri: http://localhost:7070${file.client-path}
 
 minio:
-  endpoint: ${MINIO_ENDPOINT:http://18.142.29.184:9000}
+  endpoint: ${MINIO_ENDPOINT_PROD:https://storage.chanthorndev.site}
   access-key: admin
   secret-key: qwerqwer
   bucket-name: ite-bucket
@@ -43,13 +43,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/ite}
-          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI_PROD:http://localhost:9090/realms/ite}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI_PROD:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
           #issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/ite}
           #jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5850/ite}
+    url: ${SPRING_DATASOURCE_URL_PROD:jdbc:postgresql://localhost:5850/ite}
     username: admin
     password: admin@123
     driver-class-name: org.postgresql.Driver
