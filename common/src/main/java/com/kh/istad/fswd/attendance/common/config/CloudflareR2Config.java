@@ -19,7 +19,7 @@ public class CloudflareR2Config {
     @Value("${cloudflare.r2.secret-key:local-r2-secret-key}")
     private String secretKey;
 
-    @Value("${cloudflare.r2.endpoint:https://example.r2.cloudflarestorage.com}")
+    @Value("${cloudflare.r2.endpoint:https://bf8bd6c44f656fd86a5108b9ba2929e1.r2.cloudflarestorage.com}")
     private String endpoint;
 
     @Bean
