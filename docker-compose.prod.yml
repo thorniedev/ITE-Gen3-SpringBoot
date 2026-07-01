@@ -1,6 +1,7 @@
 services:
   ecommerce:
-    image: ${ECOMMERCE_IMAGE:-ghcr.io/thorniedev/ite-gen3-springboot-ecommerce:latest}
+    #image: ${ECOMMERCE_IMAGE:-ghcr.io/thorniedev/ite-gen3-springboot-ecommerce:latest}
+    image: ${ECOMMERCE_IMAGE}
     container_name: ite-ecommerce
     restart: unless-stopped
     extra_hosts:
