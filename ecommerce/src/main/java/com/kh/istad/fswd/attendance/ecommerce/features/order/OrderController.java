@@ -44,7 +44,8 @@ public class OrderController {
             @Valid @RequestBody CreateOrderRequest request,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        return orderService.createOrder(request, jwt.getSubject());
+        return orderService
+                .createOrder(request, jwt.getSubject());
     }
 
     @PostMapping("/{id}/check-payment")
