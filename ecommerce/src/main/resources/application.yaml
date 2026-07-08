@@ -92,8 +92,9 @@ bakong:
 ecommerce:
   payment:
     currency: ${ECOMMERCE_PAYMENT_CURRENCY:USD}
+    merchant-id: ${ECOMMERCE_PAYMENT_MERCHANT_ID:ECOM001}
 
 payment:
-  success-url: ${PAYMENT_SUCCESS_URL:}
-  cancel-url: ${PAYMENT_CANCEL_URL:}
-  webhook-url: ${PAYMENT_WEBHOOK_URL:}
+  success-url: ${PAYMENT_SUCCESS_URL}
+  cancel-url: ${PAYMENT_CANCEL_URL}
+  webhook-url: ${PAYMENT_WEBHOOK_URL}

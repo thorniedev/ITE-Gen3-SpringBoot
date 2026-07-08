@@ -49,6 +49,9 @@ public class OrderServiceImpl implements OrderService {
     @Value("${ecommerce.payment.currency:USD}") // Reads default currency from config, If missing, use USD
     private KHQRCurrency defaultPaymentCurrency;
 
+    @Value("${ecommerce.payment.merchant-id:ECOM001}")
+    private String merchantId;
+
     @Override
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request, String customerId) {
@@ -310,7 +313,7 @@ public class OrderServiceImpl implements OrderService {
                 total.doubleValue(),
                 "ITE ECOMMERCE",
                 "PHNOM PENH",
-                order.getCustomerId(),
+                merchantId,
                 "ECOMMERCE",
                 null,
                 15,
