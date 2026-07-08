@@ -73,4 +73,5 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
                 .findFirst()
                 .orElse(jwt.getSubject());
     }
+
 }

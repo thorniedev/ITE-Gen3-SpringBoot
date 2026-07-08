@@ -20,6 +20,7 @@ public class SecurityConfig {
             Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakJwtAuthenticationConverter
     ) throws Exception {
         return http
+
                 // TODO
 
                 // 1. CSRF -> Disable no need form
@@ -44,7 +45,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // Security
+                // Security Mechanisms
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter))
                 )
