@@ -51,12 +51,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResponse createOrder(CreateOrderRequest request) {
+    public OrderResponse createOrder(CreateOrderRequest request, String customerId) {
 
         Order order = new Order();
 
         // Copies customer info from request into order
-        order.setCustomerId(request.customerId());
+        order.setCustomerId(customerId);
         order.setAddress(request.address());
         order.setDiscount(request.discount() == null ? 0F : request.discount()); // If discount is null, use dis = 0
         order.setStatus(false); // default status of payment (Order is not paid yet)

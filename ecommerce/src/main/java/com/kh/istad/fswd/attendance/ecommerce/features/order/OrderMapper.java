@@ -21,6 +21,7 @@ public interface OrderMapper
     @Mapping(target = "paymentQr", ignore = true)
     @Mapping(target = "paymentMd5", ignore = true)
     @Mapping(target = "paymentStatus", ignore = true)
+    @Mapping(target = "customerId", ignore = true)
     Order mapOrderRequestToOrder(CreateOrderRequest createOrderRequest);
 
 

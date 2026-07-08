@@ -8,7 +8,6 @@ import java.util.List;
 
 public record CreateOrderRequest(
 
-        @NotBlank String customerId,
         @NotBlank String address,
         @PositiveOrZero Float discount,
         String phone,

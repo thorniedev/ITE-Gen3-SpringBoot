@@ -37,4 +37,8 @@ dependencies {
     // MinIo
     implementation 'io.minio:minio:8.5.17'
 
+    // Spring Boot Actuator + Micrometer
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }

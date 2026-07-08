@@ -47,6 +47,7 @@ public class Product {
     @ManyToOne()
     private Category category;
 
+
     @OneToMany(mappedBy = "product")
     private List<OrderLine> orderLines;
 
