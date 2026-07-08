@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/images/upload").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/minio/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders/place-order").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
 
