@@ -6,12 +6,13 @@ app:
   port: "${server.port:7070}"
 
   keycloak:
-    base-url: http://localhost:9090
-    realm: ite
-    admin-realm: master
-    admin-client-id: admin-cli
-    admin-username: ${KEYCLOAK_ADMIN_USERNAME:${KC_ADMIN:temp-admin}}
-    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:${KC_ADMIN_PASSWORD:iam@123}}
+    base-url: ${KEYCLOAK_BASE_URL}
+    realm: ${KEYCLOAK_REALM}
+    admin-realm: ${KEYCLOAK_ADMIN_REALM}
+    admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
+    admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:}
+    admin-username: ${KEYCLOAK_ADMIN_USERNAME:}
+    admin-password: ${KEYCLOAK_ADMIN_PASSWORD:}
 
 server:
   port: 7070
@@ -58,7 +59,7 @@ spring:
           #jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${DATABASE_URL}
     username: admin
     password: admin@123
     driver-class-name: org.postgresql.Driver
@@ -86,10 +87,11 @@ cloudflare:
 bakong:
   account-id: ${BAKONG_ACCOUNT_ID:}
   base-url: ${BAKONG_BASE_URL:https://api-bakong.nbc.gov.kh}
-  api-token: ${BAKONG_API_TOKEN:}
-  email: ${BAKONG_EMAIL:${EMAIL:}}
+  api-token: ${BAKONG_API_TOKEN:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiN2MwYzcyYTUxNjllNDIyOSJ9LCJpYXQiOjE3ODM1MDg1ODYsImV4cCI6MTc5MTI4NDU4Nn0.NUQSb-4-pLMuamoKgfV4FialltgrscgJazdPpGLnRQo}
+  email: ${BAKONG_EMAIL}
 
 ecommerce:
   payment:
     currency: ${ECOMMERCE_PAYMENT_CURRENCY:USD}
     merchant-id: ${ECOMMERCE_PAYMENT_MERCHANT_ID:ECOM001}
+    acquiring-bank: ${ECOMMERCE_PAYMENT_ACQUIRING_BANK:KBRT}

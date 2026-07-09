@@ -4,13 +4,10 @@ import com.kh.istad.ite.user.user.dto.CreateUserRequest;
 import com.kh.istad.ite.user.user.dto.UserProfileResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -25,7 +22,18 @@ public class UserProfileController {
     }
 
     @PostMapping
-    public UserProfileResponse createUser(@Valid @RequestBody CreateUserRequest request) {
+    public UserProfileResponse createUser(
+            @Valid
+            @RequestBody CreateUserRequest request
+    ) {
         return userProfileService.createUser(request);
+    }
+
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public UserProfileResponse deleteUser(
+            @PathVariable String userId
+    ){
+        return userProfileService.deleteUser(userId);
     }
 }

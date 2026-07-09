@@ -2,29 +2,27 @@ package com.kh.istad.ite.user.keycloak;
 
 import com.kh.istad.fswd.attendance.common.exception.ApplicationException;
 import com.kh.istad.ite.user.user.dto.CreateUserRequest;
-import lombok.RequiredArgsConstructor;
+import jakarta.ws.rs.core.Response; // note this
+import lombok.extern.slf4j.Slf4j;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.CreatedResponseUtil;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
-@RequiredArgsConstructor
 public class KeycloakUserClient {
-
-    private final RestClient.Builder restClientBuilder;
 
     @Value("${app.keycloak.base-url}")
     private String baseUrl;
@@ -38,6 +36,9 @@ public class KeycloakUserClient {
     @Value("${app.keycloak.admin-client-id}")
     private String adminClientId;
 
+    @Value("${app.keycloak.admin-client-secret:}")
+    private String adminClientSecret;
+
     @Value("${app.keycloak.admin-username}")
     private String adminUsername;
 
@@ -45,134 +46,126 @@ public class KeycloakUserClient {
     private String adminPassword;
 
     public String createUser(CreateUserRequest request) {
-        String accessToken = getAdminAccessToken();
+        try (Keycloak keycloak = buildAdminClient()) {
+            RealmResource realmResource = keycloak.realm(realm);
+            UserRepresentation userRepresentation = toUserRepresentation(request);
 
-        try {
-            HttpHeaders headers = restClientBuilder.build()
-                    .post()
-                    .uri(baseUrl + "/admin/realms/{realm}/users", realm)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
-                    .body(toKeycloakUserBody(request))
-                    .retrieve()
-                    .toBodilessEntity()
-                    .getHeaders();
+            try (Response response = realmResource.users().create(userRepresentation)) {
+                // Log
+                log.info("Response status code: {}", response.getStatus());
 
-            String userId = extractUserId(headers);
-            assignRealmRoles(userId, request.roles(), accessToken);
+                if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
 
-            return userId;
-        } catch (RestClientResponseException exception) {
-            throw keycloakException("Cannot create Keycloak user: " + exception.getResponseBodyAsString());
-        }
-    }
+                    throw keycloakException("Cannot create Keycloak user: " + response.getStatusInfo().getReasonPhrase());
+                }
 
-    private String getAdminAccessToken() {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "password");
-        body.add("client_id", adminClientId);
-        body.add("username", adminUsername);
-        body.add("password", adminPassword);
-
-        try {
-            Map<String, Object> response = restClientBuilder.build()
-                    .post()
-                    .uri(baseUrl + "/realms/{realm}/protocol/openid-connect/token", adminRealm)
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .body(body)
-                    .retrieve()
-                    .body(new ParameterizedTypeReference<>() {
-                    });
-
-            if (response == null || response.get("access_token") == null) {
-                throw keycloakException("Cannot get Keycloak admin access token");
+                String userId = CreatedResponseUtil.getCreatedId(response);
+                assignRealmRoles(realmResource, userId, request.roles());
+                return userId;
             }
-
-            return response.get("access_token").toString();
-        } catch (RestClientResponseException exception) {
-            throw keycloakException("Cannot get Keycloak admin access token: " + exception.getResponseBodyAsString());
+        } catch (ApplicationException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw keycloakException("Cannot create Keycloak user: " + exception.getMessage());
         }
     }
 
-    private Map<String, Object> toKeycloakUserBody(CreateUserRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("username", request.userName());
-        body.put("enabled", request.enabled() == null || request.enabled());
-        body.put("emailVerified", Boolean.TRUE.equals(request.emailVerified()));
+    public void deleteUser(String userId) {
+        try (Keycloak keycloak = buildAdminClient()) {
+            Response response = keycloak.realm(realm)
+                    .users()
+                    .delete(userId);
 
-        putIfNotBlank(body, "email", request.email());
-        putIfNotBlank(body, "firstName", request.firstName());
-        putIfNotBlank(body, "lastName", request.lastName());
-
-        Map<String, List<String>> attributes = new LinkedHashMap<>();
-        putAttributeIfNotBlank(attributes, "phone_number", request.phone());
-        putAttributeIfNotBlank(attributes, "address", request.address());
-
-        if (!attributes.isEmpty()) {
-            body.put("attributes", attributes);
+            try (response) {
+                if (response.getStatus() != Response.Status.NO_CONTENT.getStatusCode()) {
+                    throw keycloakException("Cannot delete Keycloak user: " + response.getStatusInfo().getReasonPhrase());
+                }
+            }
+        } catch (ApplicationException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw keycloakException("Cannot delete Keycloak user: " + exception.getMessage());
         }
-
-        body.put("credentials", List.of(Map.of(
-                "type", "password",
-                "value", request.password(),
-                "temporary", Boolean.TRUE.equals(request.temporaryPassword())
-        )));
-
-        return body;
     }
 
-    private void assignRealmRoles(String userId, List<String> roles, String accessToken) {
+    private Keycloak buildAdminClient() {
+        KeycloakBuilder builder = KeycloakBuilder.builder()
+                .serverUrl(baseUrl)
+                .realm(adminRealm)
+                .clientId(adminClientId);
+
+        if (adminClientSecret != null && !adminClientSecret.isBlank()) {
+            return builder
+                    .clientSecret(adminClientSecret)
+                    .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                    .build();
+        }
+
+        return builder
+                .username(adminUsername)
+                .password(adminPassword)
+                .grantType(OAuth2Constants.PASSWORD)
+                .build();
+    }
+
+    private UserRepresentation toUserRepresentation(CreateUserRequest request) {
+
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setUsername(request.userName());
+
+        // this need set enable and verify
+        userRepresentation.setEnabled(request.enabled() == null || request.enabled());
+        userRepresentation.setEmailVerified(request.emailVerified() == null || request.emailVerified());
+        userRepresentation.setEmail(request.email());
+
+        userRepresentation.setFirstName(request.firstName());
+        userRepresentation.setLastName(request.lastName());
+        userRepresentation.setCredentials(List.of(toPasswordCredential(request)));
+
+        userRepresentation.setAttributes(Map.of(
+                "phone_number", List.of(nullToBlank(request.phone())),
+                "address", List.of(nullToBlank(request.address())),
+                "avatar", List.of(nullToBlank(request.avatar()))
+        ));
+
+        return userRepresentation;
+    }
+
+    private CredentialRepresentation toPasswordCredential(CreateUserRequest request) {
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(request.password());
+        credential.setTemporary(Boolean.TRUE.equals(request.temporaryPassword()));
+        return credential;
+    }
+
+    private void assignRealmRoles(RealmResource realmResource, String userId, List<String> roles) {
         if (roles == null || roles.isEmpty()) {
             return;
         }
 
-        List<Map<String, Object>> roleRepresentations = new ArrayList<>();
+        List<RoleRepresentation> roleRepresentations = new ArrayList<>();
 
         for (String role : roles) {
-            roleRepresentations.add(getRealmRole(role, accessToken));
+            if (role == null || role.isBlank()) {
+                continue;
+            }
+
+            String normalizedRole = role.startsWith("ROLE_") ? role.substring("ROLE_".length()) : role;
+            try {
+                roleRepresentations.add(realmResource.roles().get(normalizedRole).toRepresentation());
+            } catch (Exception exception) {
+                throw keycloakException("Realm role not found or not accessible: " + normalizedRole);
+            }
         }
 
-        restClientBuilder.build()
-                .post()
-                .uri(baseUrl + "/admin/realms/{realm}/users/{userId}/role-mappings/realm", realm, userId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
-                .body(roleRepresentations)
-                .retrieve()
-                .toBodilessEntity();
-    }
-
-    private Map<String, Object> getRealmRole(String role, String accessToken) {
-        return restClientBuilder.build()
-                .get()
-                .uri(baseUrl + "/admin/realms/{realm}/roles/{role}", realm, role)
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-    }
-
-    private String extractUserId(HttpHeaders headers) {
-        URI location = headers.getLocation();
-
-        if (location == null) {
-            throw keycloakException("Keycloak did not return created user location");
-        }
-
-        String path = location.getPath();
-        return path.substring(path.lastIndexOf('/') + 1);
-    }
-
-    private void putIfNotBlank(Map<String, Object> body, String key, String value) {
-        if (value != null && !value.isBlank()) {
-            body.put(key, value);
+        if (!roleRepresentations.isEmpty()) {
+            realmResource.users().get(userId).roles().realmLevel().add(roleRepresentations);
         }
     }
 
-    private void putAttributeIfNotBlank(Map<String, List<String>> attributes, String key, String value) {
-        if (value != null && !value.isBlank()) {
-            attributes.put(key, List.of(value));
-        }
+    private String nullToBlank(String value) {
+        return value == null ? "" : value;
     }
 
     private ApplicationException keycloakException(String message) {

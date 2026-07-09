@@ -9,4 +9,6 @@ public interface UserProfileService {
     UserProfileResponse syncCurrentUser(Jwt jwt);
 
     UserProfileResponse createUser(CreateUserRequest request);
+
+    UserProfileResponse deleteUser(String userId);
 }

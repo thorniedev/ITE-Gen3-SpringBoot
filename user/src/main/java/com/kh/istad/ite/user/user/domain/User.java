@@ -12,16 +12,19 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users")
-public class user
+public class User
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private String userId; // from Keycloak
 
-    @Column(nullable = false, unique = true)
-    private String uuid;
+    private String avatar; // new column
+
     @Column(unique = true)
     private String userName;
+
+    private String firstName;
+    private String lastName;
     private String password;
     private String email;
     private String phone;

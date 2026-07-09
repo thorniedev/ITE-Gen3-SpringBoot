@@ -1,13 +1,10 @@
 package com.kh.istad.ite.user.user.repository;
 
-import com.kh.istad.ite.user.user.domain.user;
+import com.kh.istad.ite.user.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface UserRepository extends JpaRepository<user, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
 
-    Optional<user> findByUuid(String uuid);
 }

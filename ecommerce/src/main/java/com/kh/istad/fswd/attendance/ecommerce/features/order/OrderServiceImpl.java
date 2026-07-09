@@ -52,6 +52,9 @@ public class OrderServiceImpl implements OrderService {
     @Value("${ecommerce.payment.merchant-id:ECOM001}")
     private String merchantId;
 
+    @Value("${ecommerce.payment.acquiring-bank:KBRT}")
+    private String acquiringBank;
+
     @Override
     @Transactional
     public OrderResponse createOrder(CreateOrderRequest request, String customerId) {
@@ -314,7 +317,7 @@ public class OrderServiceImpl implements OrderService {
                 "ITE ECOMMERCE",
                 "PHNOM PENH",
                 merchantId,
-                "ECOMMERCE",
+                acquiringBank,
                 null,
                 15,
                 generateBillNumber(),
