@@ -49,14 +49,20 @@ public class OrderServiceImpl implements OrderService {
     @Value("${ecommerce.payment.currency:USD}") // Reads default currency from config, If missing, use USD
     private KHQRCurrency defaultPaymentCurrency;
 
+    @Value("${ecommerce.payment.merchant-id:ECOM001}")
+    private String merchantId;
+
+    @Value("${ecommerce.payment.acquiring-bank:KBRT}")
+    private String acquiringBank;
+
     @Override
     @Transactional
-    public OrderResponse createOrder(CreateOrderRequest request) {
+    public OrderResponse createOrder(CreateOrderRequest request, String customerId) {
 
         Order order = new Order();
 
         // Copies customer info from request into order
-        order.setCustomerId(request.customerId());
+        order.setCustomerId(customerId);
         order.setAddress(request.address());
         order.setDiscount(request.discount() == null ? 0F : request.discount()); // If discount is null, use dis = 0
         order.setStatus(false); // default status of payment (Order is not paid yet)
@@ -310,8 +316,8 @@ public class OrderServiceImpl implements OrderService {
                 total.doubleValue(),
                 "ITE ECOMMERCE",
                 "PHNOM PENH",
-                order.getCustomerId(),
-                "ECOMMERCE",
+                merchantId,
+                acquiringBank,
                 null,
                 15,
                 generateBillNumber(),

@@ -1,10 +1,8 @@
-package com.kh.istad.ite.user.user.dto;
-
-import com.kh.istad.ite.user.user.UserStatus;
+package com.kh.istad.ite.user.auth.dto;
 
 import java.util.List;
 
-public record UserProfileResponse(
+public record RegisterResponse(
         String userId,
         String userName,
         String firstName,
@@ -13,7 +11,6 @@ public record UserProfileResponse(
         String email,
         String phone,
         String address,
-        UserStatus status,
         List<String> roles
 ) {
 }

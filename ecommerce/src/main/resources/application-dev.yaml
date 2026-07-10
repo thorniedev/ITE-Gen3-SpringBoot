@@ -1,5 +1,4 @@
 
-# main in ecommerce-module
 app:
   version: 1
   info: "Testing app"
@@ -24,7 +23,7 @@ file:
   base-uri: http://localhost:7070${file.client-path}
 
 minio:
-  endpoint: ${MINIO_ENDPOINT:https://storage.chanthorndev.site}
+  endpoint: https://storage.chanthorndev.site
   access-key: admin
   secret-key: qwerqwer
   bucket-name: ite-bucket
@@ -38,6 +37,7 @@ management:
     health:
       show-details: always
 spring:
+
   config:
     import: optional:file:.env[.properties],optional:file:../.env[.properties],optional:file:ecommerce/.env[.properties]
 
@@ -59,7 +59,7 @@ spring:
           #jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/ite/protocol/openid-connect/certs}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${DATABASE_URL}
     username: admin
     password: admin@123
     driver-class-name: org.postgresql.Driver
@@ -76,8 +76,8 @@ spring:
 
 cloudflare:
   r2:
-    image-folder: ${CLOUDFLARE_R2_IMAGE_FOLDER}
-    max-image-size: ${CLOUDFLARE_R2_MAX_IMAGE_SIZE}
+    image-folder: ${CLOUDFLARE_R2_IMAGE_FOLDER:images}
+    max-image-size: ${CLOUDFLARE_R2_MAX_IMAGE_SIZE:5242880}
     access-key: ${CLOUDFLARE_R2_ACCESS_KEY}
     secret-key: ${CLOUDFLARE_R2_SECRET_KEY}
     endpoint: ${CLOUDFLARE_R2_ENDPOINT}
@@ -87,16 +87,11 @@ cloudflare:
 bakong:
   account-id: ${BAKONG_ACCOUNT_ID:}
   base-url: ${BAKONG_BASE_URL:https://api-bakong.nbc.gov.kh}
-  api-token: ${BAKONG_API_TOKEN:}
-  email: ${BAKONG_EMAIL:${EMAIL:}}
+  api-token: ${BAKONG_API_TOKEN:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiN2MwYzcyYTUxNjllNDIyOSJ9LCJpYXQiOjE3ODM1MDg1ODYsImV4cCI6MTc5MTI4NDU4Nn0.NUQSb-4-pLMuamoKgfV4FialltgrscgJazdPpGLnRQo}
+  email: ${BAKONG_EMAIL}
 
 ecommerce:
   payment:
     currency: ${ECOMMERCE_PAYMENT_CURRENCY:USD}
     merchant-id: ${ECOMMERCE_PAYMENT_MERCHANT_ID:ECOM001}
     acquiring-bank: ${ECOMMERCE_PAYMENT_ACQUIRING_BANK:KBRT}
-
-payment:
-  success-url: ${PAYMENT_SUCCESS_URL}
-  cancel-url: ${PAYMENT_CANCEL_URL}
-  webhook-url: ${PAYMENT_WEBHOOK_URL}

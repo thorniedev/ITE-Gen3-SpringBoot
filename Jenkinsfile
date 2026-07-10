@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "registry.gitlab.com/ite-gen3/ecommerce/ite-gen3-springboot-ecommerce"
+        // IMAGE_NAME = "registry.gitlab.com/ite-gen3/ecommerce/ite-gen3-springboot-ecommerce"
+        IMAGE_NAME = "registry.gitlab.com/ite-gen3/ecommerce/ecommerce"
         SERVER_HOST = "18.142.29.184"
         SERVER_USER = "ubuntu"
         SERVER_PATH = "/home/ubuntu/app/ite-commerce"
@@ -49,9 +50,9 @@ pipeline {
                     passwordVariable: 'GITLAB_TOKEN'
                 )]) {
                     sh '''
-                    echo "$GITLAB_TOKEN" | /usr/bin/docker login registry.gitlab.com -u "$GITLAB_USER" --password-stdin
-                    /usr/bin/docker push ${IMAGE_NAME}:${BUILD_NUMBER}
-                    /usr/bin/docker push ${IMAGE_NAME}:latest
+                    echo "$GITLAB_TOKEN" | docker login registry.gitlab.com -u "$GITLAB_USER" --password-stdin
+                    docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                    docker push ${IMAGE_NAME}:latest
                     '''
                 }
             }

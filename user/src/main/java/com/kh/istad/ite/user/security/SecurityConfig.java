@@ -20,6 +20,7 @@ public class SecurityConfig {
             Converter<Jwt, ? extends AbstractAuthenticationToken> keycloakJwtAuthenticationConverter
     ) throws Exception {
         return http
+
                 // TODO
 
                 // 1. CSRF -> Disable no need form
@@ -35,16 +36,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers("/file/**").permitAll()
 
-                        // Public image upload endpoint
-                        .requestMatchers(HttpMethod.POST, "/api/v1/images/upload").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/images/upload").permitAll() // Public image upload endpoint
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/minio/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders/place-order").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
 
-                // Security
+                // Security Mechanisms
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(keycloakJwtAuthenticationConverter))
                 )
