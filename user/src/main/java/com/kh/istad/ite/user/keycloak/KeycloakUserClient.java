@@ -1,7 +1,8 @@
 package com.kh.istad.ite.user.keycloak;
 
 import com.kh.istad.fswd.attendance.common.exception.ApplicationException;
-import com.kh.istad.ite.user.user.dto.CreateUserRequest;
+import com.kh.istad.ite.user.user.dto.CreateUserProfileRequest;
+import com.kh.istad.ite.user.user.dto.UpdateUserProfileRequest;
 import jakarta.ws.rs.core.Response; // note this
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
@@ -45,7 +46,7 @@ public class KeycloakUserClient {
     @Value("${app.keycloak.admin-password}")
     private String adminPassword;
 
-    public String createUser(CreateUserRequest request) {
+    public String createUser(CreateUserProfileRequest request) {
         try (Keycloak keycloak = buildAdminClient()) {
             RealmResource realmResource = keycloak.realm(realm);
             UserRepresentation userRepresentation = toUserRepresentation(request);
@@ -88,6 +89,62 @@ public class KeycloakUserClient {
         }
     }
 
+    public void disableUser(String userId) {
+        try (Keycloak keycloak = buildAdminClient()) {
+            UserRepresentation userRepresentation = keycloak.realm(realm)
+                    .users()
+                    .get(userId)
+                    .toRepresentation();
+
+            userRepresentation.setEnabled(false);
+
+            keycloak.realm(realm)
+                    .users()
+                    .get(userId)
+                    .update(userRepresentation);
+        } catch (ApplicationException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw keycloakException("Cannot disable Keycloak user: " + exception.getMessage());
+        }
+    }
+
+    public void updateUserProfile(String userId, UpdateUserProfileRequest request) {
+        try (Keycloak keycloak = buildAdminClient()) {
+            UserRepresentation userRepresentation = keycloak.realm(realm)
+                    .users()
+                    .get(userId)
+                    .toRepresentation();
+
+            if (request.firstName() != null) {
+                userRepresentation.setFirstName(request.firstName());
+            }
+
+            if (request.lastName() != null) {
+                userRepresentation.setLastName(request.lastName());
+            }
+
+            Map<String, List<String>> attributes = userRepresentation.getAttributes();
+            if (attributes == null) {
+                attributes = new java.util.HashMap<>();
+            }
+
+            putAttributeIfPresent(attributes, "phone_number", request.phone());
+            putAttributeIfPresent(attributes, "address", request.address());
+            putAttributeIfPresent(attributes, "avatar", request.avatar());
+            userRepresentation.setAttributes(attributes);
+
+            keycloak.realm(realm)
+                    .users()
+                    .get(userId)
+                    .update(userRepresentation);
+        } catch (ApplicationException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw keycloakException("Cannot update Keycloak user profile: " + exception.getMessage());
+        }
+    }
+
     private Keycloak buildAdminClient() {
         KeycloakBuilder builder = KeycloakBuilder.builder()
                 .serverUrl(baseUrl)
@@ -108,7 +165,7 @@ public class KeycloakUserClient {
                 .build();
     }
 
-    private UserRepresentation toUserRepresentation(CreateUserRequest request) {
+    private UserRepresentation toUserRepresentation(CreateUserProfileRequest request) {
 
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setUsername(request.userName());
@@ -131,7 +188,7 @@ public class KeycloakUserClient {
         return userRepresentation;
     }
 
-    private CredentialRepresentation toPasswordCredential(CreateUserRequest request) {
+    private CredentialRepresentation toPasswordCredential(CreateUserProfileRequest request) {
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setValue(request.password());
@@ -166,6 +223,12 @@ public class KeycloakUserClient {
 
     private String nullToBlank(String value) {
         return value == null ? "" : value;
+    }
+
+    private void putAttributeIfPresent(Map<String, List<String>> attributes, String key, String value) {
+        if (value != null) {
+            attributes.put(key, List.of(value));
+        }
     }
 
     private ApplicationException keycloakException(String message) {

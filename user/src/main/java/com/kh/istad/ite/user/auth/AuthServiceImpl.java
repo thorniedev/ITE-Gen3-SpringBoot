@@ -4,7 +4,7 @@ import com.kh.istad.fswd.attendance.common.exception.BadRequestException;
 import com.kh.istad.ite.user.auth.dto.RegisterRequest;
 import com.kh.istad.ite.user.auth.dto.RegisterResponse;
 import com.kh.istad.ite.user.user.UserProfileService;
-import com.kh.istad.ite.user.user.dto.CreateUserRequest;
+import com.kh.istad.ite.user.user.dto.CreateUserProfileRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService
             throw new BadRequestException("Password and confirm password do not match");
         }
 
-        CreateUserRequest createUserRequest = new CreateUserRequest(
+        CreateUserProfileRequest createUserProfileRequest = new CreateUserProfileRequest(
                 registerRequest.userName(),
                 registerRequest.password(),
                 registerRequest.email(),
@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService
                 REGISTER_ROLES
         );
 
-        return authMapper.mapToRegisterResponse(userProfileService.createUser(createUserRequest));
+        return authMapper.mapToRegisterResponse(userProfileService.createUser(createUserProfileRequest));
     }
+
 }

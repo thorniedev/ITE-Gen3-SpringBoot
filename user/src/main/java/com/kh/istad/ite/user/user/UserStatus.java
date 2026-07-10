@@ -1,5 +1,7 @@
 package com.kh.istad.ite.user.user;
 
-public enum Enum {
-    UserStatus
+public enum UserStatus {
+    ACTIVE,
+    DISABLED,
+    DELETED
 }

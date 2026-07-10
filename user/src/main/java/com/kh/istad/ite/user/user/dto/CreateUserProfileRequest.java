@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 
-public record CreateUserRequest(
+public record CreateUserProfileRequest(
         @NotBlank
         String userName,
 

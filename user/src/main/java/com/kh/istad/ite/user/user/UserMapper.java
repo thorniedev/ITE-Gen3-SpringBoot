@@ -20,5 +20,6 @@ public interface UserMapper {
 
     @Mapping(target = "roles", source = "roles")
     UserProfileResponse mapToUserProfileResponse(User user, List<String> roles);
-
 }
+
+

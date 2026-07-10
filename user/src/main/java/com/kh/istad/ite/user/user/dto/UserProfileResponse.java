@@ -1,5 +1,7 @@
 package com.kh.istad.ite.user.user.dto;
 
+import com.kh.istad.ite.user.user.UserStatus;
+
 import java.util.List;
 
 public record UserProfileResponse(
@@ -11,6 +13,7 @@ public record UserProfileResponse(
         String email,
         String phone,
         String address,
+        UserStatus status,
         List<String> roles
 ) {
 }
